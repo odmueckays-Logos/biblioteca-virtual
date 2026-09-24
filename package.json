@@ -40,10 +40,8 @@
       "datos/muestra.json",
       "node_modules/three/package.json",
       "node_modules/three/build/**",
-      "node_modules/three/examples/jsm/**",
       "node_modules/@fontsource/**",
-      "!**/*.map",
-      "!**/{.eslintrc,.editorconfig,.travis.yml,appveyor.yml}"
+      "!**/*.map"
     ],
     "win": {
       "icon": "build/icono.ico",
@@ -71,6 +69,15 @@
     },
     "portable": {
       "artifactName": "Biblioteca-Virtual-portable-${version}.${ext}"
-    }
+    },
+    "extraResources": [
+      {
+        "from": "node_modules/three/examples/jsm",
+        "to": "three-addons",
+        "filter": [
+          "**/*.js"
+        ]
+      }
+    ]
   }
 }

@@ -8,6 +8,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Almacen } = require('./almacen');
 
+// El nombre con el que la app se presenta al sistema: de él cuelga la carpeta
+// donde guarda el contenido (AppData\Roaming\Biblioteca Virtual), así que se pone
+// antes de preguntar por ella. Sin esto sería «biblioteca-virtual», que nadie
+// reconoce al buscar su biblioteca.
+app.setName('Biblioteca Virtual');
+
 const ROOT = path.join(__dirname, '..');
 const DEBUG = process.argv.includes('--debug');
 const argumento = (nombre) => process.argv.find((a) => a.startsWith(`${nombre}=`))?.slice(nombre.length + 1);
@@ -149,11 +155,27 @@ const TIPOS = {
 // Se leen con `fs` y no con el cargador de red por la app empaquetada: ahí los
 // archivos del programa viven dentro de app.asar, que `fs` sabe abrir y el
 // cargador de red no (devolvía «archivo no encontrado» y la ventana salía negra).
+// Los complementos de Three.js (three/addons: el postprocesado, el cargador de
+// modelos…) viven en node_modules/three/examples/jsm. Al empaquetar no pueden ir
+// dentro del programa, porque el empaquetador descarta cualquier carpeta
+// «examples» de node_modules: viajan al lado, en resources/three-addons, y se
+// sirven desde ahí con la misma dirección de siempre.
+const ADDONS = '/node_modules/three/examples/jsm/';
+
+// De qué carpeta sale cada dirección: el contenido, los complementos o el
+// programa. Devuelve [carpeta, resto].
+function deDonde(pathname) {
+  if (pathname.startsWith('/datos/')) return [DATOS, pathname.slice('/datos/'.length)];
+  if (app.isPackaged && pathname.startsWith(ADDONS)) {
+    return [path.join(process.resourcesPath, 'three-addons'), pathname.slice(ADDONS.length)];
+  }
+  return [ROOT, pathname];
+}
+
 function serveProjectFiles() {
   protocol.handle('app', async (request) => {
     const pathname = decodeURIComponent(new URL(request.url).pathname);
-    const base = pathname.startsWith('/datos/') ? DATOS : ROOT;
-    const rel = pathname.startsWith('/datos/') ? pathname.slice('/datos/'.length) : pathname;
+    const [base, rel] = deDonde(pathname);
     const filePath = path.normalize(path.join(base, rel));
     if (!filePath.startsWith(base)) return new Response('Prohibido', { status: 403 });
     try {
