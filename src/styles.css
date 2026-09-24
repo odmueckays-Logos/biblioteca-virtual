@@ -1,0 +1,251 @@
+:root {
+  --ink: #f3e6cf;
+  --ink-dim: rgba(243, 230, 207, 0.62);
+  --glow: rgba(255, 214, 160, 0.9);
+  --veil: #070504;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--veil);
+  color: var(--ink);
+  font-family: "EB Garamond", Georgia, serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body.hide-cursor { cursor: none; }
+
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Mirada: un punto tenue que se vuelve anillo sobre un libro */
+#reticle {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: rgba(255, 244, 228, 0.42);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  transition: width 260ms ease, height 260ms ease, margin 260ms ease,
+              background 260ms ease, border-color 260ms ease, opacity 400ms ease;
+  border: 1px solid transparent;
+  opacity: 0;
+}
+#reticle.visible { opacity: 1; }
+#reticle.active {
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  background: rgba(255, 230, 190, 0.06);
+  border-color: rgba(255, 228, 186, 0.55);
+}
+
+/* Cursor suave durante la lectura */
+#cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: rgba(255, 244, 228, 0.55);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease, width 200ms ease, height 200ms ease, margin 200ms ease,
+              background 200ms ease, border-color 200ms ease;
+  border: 1px solid transparent;
+}
+#cursor.visible { opacity: 1; }
+#cursor.turn {
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  background: rgba(255, 236, 200, 0.08);
+  border-color: rgba(255, 232, 196, 0.7);
+}
+
+/* Indicaciones breves que se desvanecen solas */
+#hint {
+  position: fixed;
+  left: 50%;
+  bottom: 5.5vh;
+  transform: translateX(-50%);
+  font-style: italic;
+  font-size: 16px;
+  letter-spacing: 0.03em;
+  color: var(--ink-dim);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  transition: opacity 900ms ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+#hint.visible { opacity: 1; }
+
+/* Fundido mientras la biblioteca se reordena (al cambiar el contenido) */
+#fundido {
+  position: fixed;
+  inset: 0;
+  background: var(--veil);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 420ms ease;
+  z-index: 9;
+}
+#fundido.visible { opacity: 1; }
+#fundido span {
+  font-style: italic;
+  font-size: 18px;
+  color: rgba(233, 220, 195, 0.55);
+}
+
+/* Velo inicial */
+#veil {
+  position: fixed;
+  inset: 0;
+  background: var(--veil);
+  display: grid;
+  place-items: center;
+  transition: opacity 1800ms ease;
+  z-index: 10;
+}
+#veil.gone { opacity: 0; pointer-events: none; }
+.veil-inner { text-align: center; }
+.veil-title {
+  font-family: "IM Fell English", serif;
+  font-size: 44px;
+  letter-spacing: 0.24em;
+  color: #e9dcc3;
+  opacity: 0.9;
+}
+.veil-sub {
+  margin-top: 6px;
+  font-style: italic;
+  font-size: 18px;
+  color: rgba(233, 220, 195, 0.55);
+}
+.veil-progress {
+  margin: 26px auto 0;
+  width: 160px;
+  height: 1px;
+  background: rgba(233, 220, 195, 0.12);
+  overflow: hidden;
+}
+.veil-progress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: rgba(233, 220, 195, 0.6);
+  transition: width 300ms ease;
+}
+
+/* Opciones de imagen (tecla O): una tarjeta de papel sobre la escena */
+.opciones {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(7, 5, 4, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+  z-index: 5;
+}
+.opciones.visible { opacity: 1; pointer-events: auto; }
+.opciones-caja {
+  display: flex;
+  flex-direction: column;
+  width: min(680px, 92vw);
+  max-height: 90vh;
+  padding: 20px 28px 16px;
+  border-radius: 6px;
+  color: #2c1e14;
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(#efe3c8, #e6d8ba);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.6), 0 2px 0 rgba(255, 255, 255, 0.4) inset;
+  transform: translateY(8px) scale(0.985);
+  transition: transform 220ms ease;
+}
+.opciones.visible .opciones-caja { transform: none; }
+.opciones-filas { overflow-y: auto; min-height: 0; }
+.opciones-titulo {
+  font-family: "IM Fell English", "EB Garamond", Georgia, serif;
+  font-size: 26px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a2418;
+  margin-bottom: 4px;
+}
+.opciones-fila {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 2px 16px;
+  align-items: center;
+  padding: 7px 0;
+  border-top: 1px solid rgba(60, 40, 26, 0.16);
+}
+.opciones-calidad { border-top: none; }
+.opciones-etiqueta { font-size: 19px; }
+.opciones-ayuda {
+  grid-column: 2;
+  font-size: 13px;
+  font-style: italic;
+  color: rgba(44, 30, 20, 0.66);
+}
+.opciones-botones { display: flex; flex-wrap: wrap; gap: 6px; }
+.opcion {
+  font: inherit;
+  font-size: 16px;
+  padding: 4px 12px;
+  color: #3a2718;
+  background: rgba(255, 252, 244, 0.55);
+  border: 1px solid rgba(60, 40, 26, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.opcion:hover { background: #fffdf6; }
+.opcion.activa {
+  color: #fdf6e6;
+  background: #7a2418;
+  border-color: #5c1a10;
+}
+.opciones-pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(60, 40, 26, 0.16);
+}
+.opciones-fps { font-style: italic; color: rgba(44, 30, 20, 0.7); }
+.opciones-cerrar {
+  font: inherit;
+  font-size: 18px;
+  padding: 6px 18px;
+  color: #fdf6e6;
+  background: #4a2a1a;
+  border: 1px solid #2f1a10;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.opciones-cerrar:hover { background: #5b3623; }

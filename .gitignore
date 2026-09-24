@@ -1,0 +1,20 @@
+# Dependencias: se instalan con `npm install`
+node_modules/
+
+# El contenido es de quien usa la biblioteca: en el repositorio va solo la
+# muestra (datos/muestra.json). Al arrancar, la app crea datos/biblioteca.json
+# a partir de ella, y las imágenes que suba el bibliotecario se quedan en su PC.
+datos/biblioteca.json
+datos/biblioteca.json.bak
+datos/imagenes/
+
+# Capturas y salidas de las pruebas
+capturas/
+*.log
+
+# Ajustes locales del editor y de la sesión (llevan rutas de esta máquina)
+.claude/
+
+# Windows y macOS
+Thumbs.db
+.DS_Store

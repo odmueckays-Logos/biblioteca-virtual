@@ -1,0 +1,24 @@
+{
+  "name": "biblioteca-virtual",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Biblioteca virtual interactiva en primera persona (prototipo visual)",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "editor": "electron . --editor",
+    "debug": "electron . --debug",
+    "dev": "python tools/dev-server.py 5173",
+    "probar": "node --no-warnings tools/probar-disposicion.mjs",
+    "medir": "electron . --medir"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@fontsource/eb-garamond": "5.3.0",
+    "@fontsource/im-fell-english": "5.3.0",
+    "three": "0.186.0"
+  },
+  "devDependencies": {
+    "electron": "^44.4.1"
+  }
+}

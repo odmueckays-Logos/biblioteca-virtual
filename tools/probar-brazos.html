@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Probar brazos</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../node_modules/three/build/three.module.js",
+      "three/addons/": "../node_modules/three/examples/jsm/"
+    }
+  }
+  </script>
+  <style>body { margin: 0; background: #111; } canvas { display: block; }</style>
+</head>
+<body>
+<script type="module">
+// Banco de pruebas del brazo: objetivo de muñeca + pose de dedos + cinemática inversa.
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { loadArms, POSES } from '../src/hands/armRig.js';
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(1100, 700, false);
+renderer.setPixelRatio(1.4);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x201a15);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.45;
+scene.add(new THREE.HemisphereLight(0xf4e4d0, 0x3a2a1e, 0.6));
+const key = new THREE.DirectionalLight(0xffe6c0, 2.2);
+key.position.set(-1.5, 2.5, 1.5);
+scene.add(key);
+
+const tex = (file, srgb) => {
+  const t = new THREE.TextureLoader().load(`../assets/textures/${file}`);
+  t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+  t.anisotropy = 8;
+  return t;
+};
+const arms = await loadArms({
+  path: '../assets/models/brazos.glb',
+  textures: {
+    color: tex('brazo-color.jpg', true),
+    normal: tex('brazo-normal.jpg', false),
+    roughness: tex('brazo-rugosidad.jpg', false),
+  },
+});
+scene.add(arms.root);
+scene.add(arms.right.frame, arms.left.frame);
+
+// Colocar el cuerpo: mirando hacia -Z, con los hombros bajo los ojos.
+const eye = new THREE.Vector3(0, 1.5, 0);
+arms.root.rotation.y = Math.PI;
+arms.root.updateMatrixWorld(true);
+const shoulderMid = arms.right.clavicle.getWorldPosition(new THREE.Vector3())
+  .add(arms.left.clavicle.getWorldPosition(new THREE.Vector3())).multiplyScalar(0.5);
+const desired = eye.clone().add(new THREE.Vector3(0, -0.24, 0.02));
+arms.root.position.add(desired.sub(shoulderMid));
+arms.root.updateMatrixWorld(true);
+
+const marker = new THREE.Mesh(new THREE.SphereGeometry(0.008), new THREE.MeshBasicMaterial({ color: 0x44ff88 }));
+scene.add(marker);
+
+function handQuat(fingers, dorsal) {
+  const z = fingers.clone().normalize().negate();
+  const y = dorsal.clone().sub(z.clone().multiplyScalar(dorsal.dot(z))).normalize();
+  const x = new THREE.Vector3().crossVectors(y, z).normalize();
+  return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+}
+
+const camera = new THREE.PerspectiveCamera(52, 1100 / 700, 0.02, 30);
+
+function setArm(side, pos, fingersDir, dorsalDir, pose) {
+  const arm = arms[side];
+  arm.frame.position.copy(pos);
+  arm.frame.quaternion.copy(handQuat(fingersDir, dorsalDir));
+  arm.setPose(pose);
+  arm.frame.updateMatrixWorld(true);
+  const pole = eye.clone().add(new THREE.Vector3(arm.sign * 0.45, -0.55, 0.15));
+  arm.solve(pole);
+  return arm;
+}
+
+async function shot(name, camPos, lookAt, fov = 52) {
+  camera.fov = fov;
+  camera.position.copy(camPos);
+  camera.lookAt(lookAt);
+  camera.updateProjectionMatrix();
+  renderer.render(scene, camera);
+  const url = renderer.domElement.toDataURL('image/png');
+  await fetch(`/__shot?name=${name}`, { method: 'POST', body: url });
+}
+
+window.__probar = {
+  THREE, arms, POSES, eye, setArm, shot, marker,
+  wristError(side) {
+    const arm = arms[side];
+    return +arm.hand.getWorldPosition(new THREE.Vector3()).distanceTo(arm.frame.position).toFixed(4);
+  },
+};
+
+// Escena de prueba: mano derecha alcanzando hacia adelante, dedos en gancho.
+const target = new THREE.Vector3(0.16, 1.3, -0.42);
+marker.position.copy(target);
+setArm('right', target, new THREE.Vector3(0.3, -0.8, -1), new THREE.Vector3(0.2, 0.9, -0.5), POSES.hook);
+setArm('left', new THREE.Vector3(-0.3, 1.1, -0.35), new THREE.Vector3(0, 0.2, -1), new THREE.Vector3(0, 1, 0.2), POSES.relaxed);
+await shot('rig-1', eye, target);
+await shot('rig-2', new THREE.Vector3(0.9, 1.45, -0.2), target, 40);
+await shot('rig-3', new THREE.Vector3(0.05, 1.9, -0.45), target, 45);
+document.title = 'listo';
+</script>
+</body>
+</html>

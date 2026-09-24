@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Ver brazos</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../node_modules/three/build/three.module.js",
+      "three/addons/": "../node_modules/three/examples/jsm/"
+    }
+  }
+  </script>
+  <style>body { margin: 0; background: #111; } canvas { display: block; }</style>
+</head>
+<body>
+<script type="module">
+// Vista de control del modelo de brazos extraído (solo desarrollo).
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(1000, 750, false);
+renderer.setPixelRatio(1.5);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1b1713);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.5;
+const key = new THREE.DirectionalLight(0xffe6c0, 2.4);
+key.position.set(-1, 2, 2);
+scene.add(key, new THREE.HemisphereLight(0xf4e4d0, 0x3a2a1e, 0.5));
+
+const tex = (file, srgb) => {
+  const t = new THREE.TextureLoader().load(`../assets/textures/${file}`);
+  t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+  t.flipY = false;
+  t.anisotropy = 8;
+  return t;
+};
+
+const gltf = await new GLTFLoader().loadAsync('../assets/models/brazos.glb');
+const root = gltf.scene;
+root.scale.setScalar(0.01);
+scene.add(root);
+
+let mesh = null;
+const bones = {};
+root.traverse((o) => {
+  if (o.isSkinnedMesh) mesh = o;
+  if (o.isBone) bones[o.name] = o;
+});
+mesh.frustumCulled = false;
+mesh.material = new THREE.MeshPhysicalMaterial({
+  map: tex('brazo-color.jpg', true),
+  normalMap: tex('brazo-normal.jpg', false),
+  roughnessMap: tex('brazo-especular.jpg', false),
+  roughness: 1.35,
+  metalness: 0,
+  sheen: 0.3,
+  sheenRoughness: 0.6,
+  sheenColor: new THREE.Color(0xff9c7a),
+});
+mesh.material.normalScale.set(1, -1);
+
+const camera = new THREE.PerspectiveCamera(35, 1000 / 750, 0.01, 20);
+const hand = bones['Bip01_R_Hand'];
+root.updateMatrixWorld(true);
+const target = new THREE.Vector3();
+hand.getWorldPosition(target);
+
+async function shot(name, offset, fov = 30) {
+  camera.fov = fov;
+  camera.position.copy(target).add(offset);
+  camera.lookAt(target);
+  camera.updateProjectionMatrix();
+  renderer.render(scene, camera);
+  const url = renderer.domElement.toDataURL('image/png');
+  await fetch(`/__shot?name=${name}`, { method: 'POST', body: url });
+}
+
+window.__ver = {
+  bones,
+  mesh,
+  target,
+  shot,
+  info() {
+    const box = new THREE.Box3().setFromObject(mesh);
+    return {
+      triangles: mesh.geometry.index.count / 3,
+      bonesCount: Object.keys(bones).length,
+      handWorld: target.toArray().map((v) => +v.toFixed(3)),
+      size: box.getSize(new THREE.Vector3()).toArray().map((v) => +v.toFixed(3)),
+    };
+  },
+};
+await shot('brazo-1', new THREE.Vector3(0.22, 0.12, 0.3), 32);
+await shot('brazo-2', new THREE.Vector3(-0.25, 0.05, 0.25), 32);
+await shot('brazo-3', new THREE.Vector3(0.05, 0.35, 0.12), 40);
+document.title = 'listo';
+</script>
+</body>
+</html>

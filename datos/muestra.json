@@ -1,0 +1,264 @@
+{
+  "formato": 1,
+  "biblioteca": {
+    "nombre": "Biblioteca del Cerro",
+    "lema": "Flora andina",
+    "disposicion": {
+      "niveles": 2,
+      "modo": "columnas"
+    }
+  },
+  "categorias": [
+    {
+      "id": "arboles-nativos",
+      "nombre": "Árboles nativos",
+      "codigo": "A",
+      "orden": 1,
+      "descripcion": "Árboles que crecen de forma natural en las laderas y quebradas de los Andes."
+    },
+    {
+      "id": "arbustos-y-flores",
+      "nombre": "Arbustos y flores",
+      "codigo": "B",
+      "orden": 2,
+      "descripcion": "Arbustos de flores vistosas de los valles interandinos."
+    },
+    {
+      "id": "aromaticas-y-medicinales",
+      "nombre": "Aromáticas y medicinales",
+      "codigo": "C",
+      "orden": 3,
+      "descripcion": "Plantas de olor intenso que se usan en infusiones, comidas y remedios caseros."
+    }
+  ],
+  "libros": [
+    {
+      "id": "cantuta",
+      "categoria": "arbustos-y-flores",
+      "titulo": "Cantuta",
+      "especie": "Cantua buxifolia",
+      "autor": "Juss. ex Lam.",
+      "familia": "Polemoniaceae",
+      "ficha": "Arbusto de flores rojas en trompeta colgante. Fue flor sagrada de los incas y hoy es flor nacional del Perú y de Bolivia.",
+      "signatura": "",
+      "altitud": {
+        "min": 1200,
+        "max": 3800
+      },
+      "portada": {
+        "tipo": "cuero",
+        "color": "#5c1e1a",
+        "etiqueta": "#1c1612",
+        "marmol": [
+          "#7a2a24",
+          "#d9b36a",
+          "#2d3a4a"
+        ]
+      },
+      "imagen": "",
+      "lamina": "cantuta",
+      "secciones": [
+        {
+          "titulo": "Descripción",
+          "texto": "La cantuta es un arbusto de ramas delgadas y arqueadas que suele medir entre uno y tres metros de altura. Sus hojas son pequeñas, simples y de forma elíptica, y se reúnen a lo largo de las ramas jóvenes.\nLo más llamativo son sus flores: largas trompetas colgantes, de color rojo intenso a magenta, que se agrupan en racimos al final de las ramas. En jardines se cultivan también variedades de otros colores."
+        },
+        {
+          "titulo": "Hábitat",
+          "texto": "Crece en laderas secas y pedregosas de los valles interandinos, sobre todo en el Perú y Bolivia. Tolera el sol fuerte, las noches frías y los suelos pobres."
+        },
+        {
+          "titulo": "Usos y saberes",
+          "texto": "Para los incas fue una flor sagrada, presente en ceremonias y ofrendas. Hoy se siembra en jardines, cercos y parques de muchas ciudades andinas.\nEs considerada flor nacional del Perú y de Bolivia, donde comparte ese honor con el patujú."
+        },
+        {
+          "titulo": "Curiosidades",
+          "texto": "Sus flores tubulares están adaptadas a los picaflores, que introducen el pico para alcanzar el néctar y, de paso, transportan el polen de una flor a otra.\nEl nombre proviene del quechua qantu."
+        },
+        {
+          "titulo": "Conservación",
+          "texto": "No se considera una especie amenazada, pero las poblaciones silvestres pueden verse afectadas por las quemas, el sobrepastoreo y la expansión de los cultivos en las laderas.\nSembrarla con semillas o esquejes de la zona ayuda a conservar su diversidad local."
+        }
+      ],
+      "notas": [
+        "Ladera soleada, junto al sendero.",
+        "Racimos con 4 a 6 flores abiertas.",
+        "Un picaflor visitó la planta tres veces.",
+        "Suelo pedregoso y seco."
+      ],
+      "muestra": true,
+      "creado": "2026-09-18T12:00:00.000Z",
+      "actualizado": "2026-09-18T12:00:00.000Z"
+    },
+    {
+      "id": "quenua",
+      "categoria": "arboles-nativos",
+      "titulo": "Queñua",
+      "especie": "Polylepis racemosa",
+      "autor": "Ruiz & Pav.",
+      "familia": "Rosaceae",
+      "ficha": "Árbol de tronco retorcido y corteza rojiza que se desprende en capas. Forma bosquetes entre los más altos del mundo.",
+      "signatura": "",
+      "altitud": {
+        "min": 3000,
+        "max": 4500
+      },
+      "portada": {
+        "tipo": "cuero",
+        "color": "#583a22",
+        "etiqueta": "#1e2a20",
+        "marmol": [
+          "#4e6b4a",
+          "#caa66a",
+          "#6e3b25"
+        ]
+      },
+      "imagen": "",
+      "lamina": "quenua",
+      "secciones": [
+        {
+          "titulo": "Descripción",
+          "texto": "La queñua es un árbol de tronco retorcido y copa irregular. Su rasgo más reconocible es la corteza rojiza, que se desprende en muchas capas delgadas, como hojas de papel.\nSus hojas son compuestas, formadas por pequeños folíolos de color verde oscuro. Las flores son diminutas, sin pétalos vistosos, y cuelgan en racimos; el viento se encarga de dispersar su polen."
+        },
+        {
+          "titulo": "Hábitat",
+          "texto": "Forma bosquetes en quebradas y laderas rocosas de la puna y las zonas altas de los Andes. Las especies de su género están entre los árboles que crecen a mayor altitud en el mundo."
+        },
+        {
+          "titulo": "Usos y saberes",
+          "texto": "Las comunidades la han usado como leña y para construir cercos y herramientas. Sus bosques protegen el suelo de la erosión y ayudan a regular el agua de los manantiales.\nHoy es una de las especies preferidas en proyectos de reforestación altoandina."
+        },
+        {
+          "titulo": "Curiosidades",
+          "texto": "Las capas de su corteza funcionan como un abrigo: ayudan a proteger el tronco de las heladas nocturnas.\nPor su aspecto, en algunos lugares la llaman árbol de papel."
+        },
+        {
+          "titulo": "Conservación",
+          "texto": "Muchos bosques de queñua se han reducido a pequeños fragmentos por la tala, las quemas y el pastoreo. Varias especies del género figuran como amenazadas.\nProteger los bosques que quedan es clave para las aves y plantas que dependen de ellos."
+        }
+      ],
+      "notas": [
+        "Bosquete en la quebrada, sobre las rocas.",
+        "Corteza en capas finas, color cobre.",
+        "Neblina por la tarde; mucho musgo.",
+        "Se escuchan aves en el interior."
+      ],
+      "muestra": true,
+      "creado": "2026-09-18T12:00:00.000Z",
+      "actualizado": "2026-09-18T12:00:00.000Z"
+    },
+    {
+      "id": "quishuar",
+      "categoria": "arboles-nativos",
+      "titulo": "Quishuar",
+      "especie": "Buddleja coriacea",
+      "autor": "Remy",
+      "familia": "Scrophulariaceae",
+      "ficha": "Árbol de hojas gruesas, verdes arriba y blanquecinas por debajo. Su madera dura sirvió para herramientas y tallas.",
+      "signatura": "",
+      "altitud": {
+        "min": 2800,
+        "max": 4200
+      },
+      "portada": {
+        "tipo": "pergamino",
+        "color": "#d8c8a4",
+        "etiqueta": "#1a1614",
+        "marmol": [
+          "#b5652c",
+          "#e8d9b0",
+          "#3d4a3a"
+        ]
+      },
+      "imagen": "",
+      "lamina": "quishuar",
+      "secciones": [
+        {
+          "titulo": "Descripción",
+          "texto": "El quishuar es un árbol o arbusto grande de hojas opuestas, gruesas y resistentes. Por encima son de color verde oscuro y por debajo se ven blanquecinas, cubiertas de un fino vello.\nSus flores, pequeñas y de color anaranjado, se agrupan en cabezuelas redondeadas en el extremo de las ramas."
+        },
+        {
+          "titulo": "Hábitat",
+          "texto": "Habita en las zonas altas de los Andes del Perú, Bolivia y Ecuador, en laderas, bordes de chacras y quebradas, donde soporta el frío y los vientos."
+        },
+        {
+          "titulo": "Usos y saberes",
+          "texto": "Su madera es dura y se ha empleado para fabricar herramientas agrícolas y objetos tallados. También se planta como cerco vivo y para proteger los suelos de las laderas."
+        },
+        {
+          "titulo": "Curiosidades",
+          "texto": "Se le atribuye un carácter sagrado en tiempos incas: con su madera se habrían tallado figuras ceremoniales.\nEl nombre de la especie, coriacea, alude a sus hojas duras, con textura parecida al cuero."
+        },
+        {
+          "titulo": "Conservación",
+          "texto": "La tala para leña ha reducido su presencia en muchos lugares. Se promueve su siembra junto a otras especies nativas en programas de reforestación."
+        }
+      ],
+      "notas": [
+        "Cerco vivo al borde de la chacra.",
+        "Hojas con envés blanquecino.",
+        "Cabezuelas anaranjadas, algo secas.",
+        "Viento fuerte al mediodía."
+      ],
+      "muestra": true,
+      "creado": "2026-09-18T12:00:00.000Z",
+      "actualizado": "2026-09-18T12:00:00.000Z"
+    },
+    {
+      "id": "muna",
+      "categoria": "aromaticas-y-medicinales",
+      "titulo": "Muña",
+      "especie": "Minthostachys mollis",
+      "autor": "(Kunth) Griseb.",
+      "familia": "Lamiaceae",
+      "ficha": "Arbusto aromático de la familia de la menta. Se toma en infusión y se usa como condimento en los valles andinos.",
+      "signatura": "",
+      "altitud": {
+        "min": 2500,
+        "max": 3500
+      },
+      "portada": {
+        "tipo": "cuero",
+        "color": "#2c3a2a",
+        "etiqueta": "#461a14",
+        "marmol": [
+          "#56704f",
+          "#e2d3a8",
+          "#8a4a3a"
+        ]
+      },
+      "imagen": "",
+      "lamina": "muna",
+      "secciones": [
+        {
+          "titulo": "Descripción",
+          "texto": "La muña es un arbusto aromático que suele medir alrededor de un metro. Como otras plantas de su familia, tiene tallos de sección cuadrangular y hojas opuestas, pequeñas y suaves.\nAl frotar sus hojas se percibe un intenso aroma parecido al de la menta. Sus flores son pequeñas y blanquecinas, y se agrupan cerca de las puntas de los tallos."
+        },
+        {
+          "titulo": "Hábitat",
+          "texto": "Crece en laderas, quebradas y bordes de caminos y chacras de los valles andinos, a menudo entre matorrales y pastos."
+        },
+        {
+          "titulo": "Usos y saberes",
+          "texto": "Se prepara en infusión, un uso tradicional para aliviar molestias digestivas, y se emplea como condimento en algunas comidas.\nLas familias campesinas colocan ramas de muña entre las papas almacenadas para ayudar a protegerlas de las plagas."
+        },
+        {
+          "titulo": "Curiosidades",
+          "texto": "Su aroma se debe a los aceites esenciales que guardan sus hojas; por eso su olor se intensifica al estrujarlas."
+        },
+        {
+          "titulo": "Conservación",
+          "texto": "La recolección excesiva de plantas silvestres puede agotar las poblaciones cercanas a los pueblos. Cultivarla en huertos familiares es una buena alternativa."
+        }
+      ],
+      "notas": [
+        "Mata aromática junto al camino.",
+        "Olor a menta al tocar las hojas.",
+        "Flores blancas, muy pequeñas.",
+        "Guardada entre las papas del almacén."
+      ],
+      "muestra": true,
+      "creado": "2026-09-18T12:00:00.000Z",
+      "actualizado": "2026-09-18T12:00:00.000Z"
+    }
+  ]
+}

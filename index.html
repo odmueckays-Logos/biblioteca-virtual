@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- El hash corresponde al importmap de abajo; si se edita, hay que recalcularlo. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-X2vNHDiwbCgo45V4Lw9Nugbi5Y8Nk6Ce8nFfE/Lg6Ss='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:">
+  <title>Biblioteca Virtual</title>
+  <link rel="stylesheet" href="node_modules/@fontsource/eb-garamond/400.css">
+  <link rel="stylesheet" href="node_modules/@fontsource/eb-garamond/400-italic.css">
+  <link rel="stylesheet" href="node_modules/@fontsource/eb-garamond/600.css">
+  <link rel="stylesheet" href="node_modules/@fontsource/im-fell-english/400.css">
+  <link rel="stylesheet" href="node_modules/@fontsource/im-fell-english/400-italic.css">
+  <link rel="stylesheet" href="src/styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./node_modules/three/build/three.module.js",
+      "three/addons/": "./node_modules/three/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <div id="reticle" aria-hidden="true"></div>
+  <div id="cursor" aria-hidden="true"></div>
+
+  <div id="hint"></div>
+
+  <div id="fundido"><span></span></div>
+
+  <div id="veil">
+    <div class="veil-inner">
+      <div class="veil-title">Biblioteca</div>
+      <div class="veil-sub">Flora del cerro</div>
+      <div class="veil-progress"><span></span></div>
+    </div>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Mismo importmap (y por eso el mismo hash) que index.html. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-X2vNHDiwbCgo45V4Lw9Nugbi5Y8Nk6Ce8nFfE/Lg6Ss='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:">
+  <title>Biblioteca · Modo bibliotecario</title>
+  <link rel="stylesheet" href="node_modules/@fontsource/eb-garamond/400.css">
+  <link rel="stylesheet" href="node_modules/@fontsource/eb-garamond/400-italic.css">
+  <link rel="stylesheet" href="node_modules/@fontsource/eb-garamond/600.css">
+  <link rel="stylesheet" href="node_modules/@fontsource/im-fell-english/400.css">
+  <link rel="stylesheet" href="node_modules/@fontsource/im-fell-english/400-italic.css">
+  <link rel="stylesheet" href="src/editor/editor.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./node_modules/three/build/three.module.js",
+      "three/addons/": "./node_modules/three/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <header class="barra">
+    <div class="marca">
+      <span class="marca-titulo">Modo bibliotecario</span>
+      <span class="marca-sub" id="nombre-biblioteca"></span>
+    </div>
+    <div class="barra-acciones">
+      <button type="button" class="boton" id="nuevo-libro">+ Nuevo libro</button>
+      <button type="button" class="boton" id="nueva-categoria">+ Nueva categoría</button>
+      <button type="button" class="boton" id="disposicion" title="Cómo se acoplan los estantes en la pared">Disposición de la pared</button>
+    </div>
+    <div class="fuente" id="fuente" title="De dónde sale y dónde se guarda el contenido"></div>
+  </header>
+
+  <main class="cuerpo">
+    <nav class="catalogo" aria-label="Catálogo">
+      <input type="search" id="buscar" class="buscar" placeholder="Buscar libro…" autocomplete="off">
+      <div id="lista"></div>
+    </nav>
+
+    <section class="panel" id="panel" aria-live="polite"></section>
+
+    <aside class="vista" id="vista" aria-label="Vista previa"></aside>
+  </main>
+
+  <div class="aviso" id="aviso" role="status"></div>
+
+  <script type="module" src="src/editor/editor.js"></script>
+</body>
+</html>
