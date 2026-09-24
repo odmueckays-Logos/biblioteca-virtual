@@ -27,6 +27,25 @@ npm run editor   # abre la biblioteca y el modo bibliotecario
 - **O:** opciones de imagen (calidad, nitidez, efectos y tope de cuadros).
 - **F12:** herramientas de desarrollo.
 
+## Un ejecutable para cualquier computadora
+
+Para llevarla a una máquina que no tiene Node.js ni nada instalado:
+
+```bash
+npm run empaquetar
+```
+
+Deja dos archivos en `dist/`, de unos 118 MB cada uno (llevan dentro Electron, Node, Three.js, las tipografías y los modelos):
+
+| Archivo | Para qué |
+|---|---|
+| `Biblioteca-Virtual-portable-0.1.0.exe` | Un solo archivo: se copia a un USB, doble clic y anda. No instala nada ni pide permisos de administrador. |
+| `Biblioteca-Virtual-instalador-0.1.0.exe` | Instalación normal, con acceso directo y desinstalador. Tampoco necesita administrador. |
+
+- **El contenido va aparte.** Dentro del programa los archivos son de solo lectura, así que la biblioteca vive en `%APPDATA%\Biblioteca Virtual\datos\`: ahí están `biblioteca.json`, su respaldo y las imágenes que suba el bibliotecario. La primera vez se crea a partir de la muestra que viaja dentro del programa, así que arranca con los cuatro libros de ejemplo. Para mudar una biblioteca de una computadora a otra, se copia esa carpeta.
+- **Windows va a desconfiar** la primera vez: «Windows protegió su PC» → *Más información* → *Ejecutar de todas formas*. Es porque el ejecutable no está firmado con un certificado (cuestan dinero y hay que renovarlos), no porque el programa tenga nada raro.
+- Lo de `dist/` no se sube al repositorio: se publica como *release* en GitHub.
+
 ## Controles
 
 | Acción | Cómo |
@@ -211,10 +230,12 @@ Las reglas (validaciones, signaturas, orden de los estantes) están en `src/dato
 - **Las sombras se congelan.** Con la escena quieta no hay nada que mover, así que el mapa de sombras no se vuelve a dibujar: se marca para actualizar cuando alguien camina, sube, toma un libro o cambia la luz (`shadowMap.autoUpdate` en `src/main.js`). Los primeros cuadros se dibujan sí o sí: si el mapa no llega a crearse, la sala sale negra.
 - **Tope de cuadros.** Poner tope no es dormir el bucle: se cuenta el próximo cuadro de tope en tope, porque con «han pasado 16 ms» y una pantalla de 144 Hz un tope de 60 daría 48.
 - **Calidad automática.** Si dos medidas seguidas bajan de 42 cuadros por segundo, se baja un escalón (alta → media → baja) y se avisa con un cartel; de ahí en adelante decide el usuario en el panel (`CALIDADES` en `src/core/renderer.js`).
+- **Los archivos se sirven con `fs`.** La app carga sus módulos, tipografías y modelos por el protocolo `app://`. Al empaquetarla, todo eso queda dentro de `app.asar`, que el cargador de red de Chromium no sabe abrir: la ventana salía negra con «archivo no encontrado». Se leen con `fs` (que sí entiende el asar) y se devuelven con su tipo de contenido a mano, porque un módulo servido como «datos sin más» el navegador no lo ejecuta.
 - **Todo procedural.** Madera, piedra, cuero, papel, lomos, páginas e ilustraciones se generan en canvas al iniciar; las únicas imágenes son las que sube el bibliotecario.
 
 ## Herramientas de desarrollo
 
+- `npm run empaquetar` arma los ejecutables de Windows en `dist/` (instalador y portátil).
 - `npm run medir` (o `electron . --medir`) mide los cuadros por segundo apagando y encendiendo cada efecto, con la escena quieta y con un libro en la mano, e imprime una tabla con la tarjeta gráfica y el tamaño de la ventana.
 - `npm run probar` comprueba el acoplamiento de los estantes (sitios elegidos, apilado automático, huecos libres) y las reglas de las láminas (qué página les toca) sin abrir la app.
 - `npm run debug` abre la app con `window.__biblioteca` en la consola (F12). `__biblioteca.irA(2)` va al estante 3 (caminando o por la escalera); `__biblioteca.pared()` muestra en qué columna y nivel quedó cada uno; `__biblioteca.tomar('quenua')` toma un libro.

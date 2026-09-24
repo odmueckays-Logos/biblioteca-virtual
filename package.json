@@ -10,7 +10,8 @@
     "debug": "electron . --debug",
     "dev": "python tools/dev-server.py 5173",
     "probar": "node --no-warnings tools/probar-disposicion.mjs",
-    "medir": "electron . --medir"
+    "medir": "electron . --medir",
+    "empaquetar": "electron-builder --win"
   },
   "license": "UNLICENSED",
   "dependencies": {
@@ -19,6 +20,57 @@
     "three": "0.186.0"
   },
   "devDependencies": {
-    "electron": "^44.4.1"
+    "electron": "^44.4.1",
+    "electron-builder": "^26.0.12"
+  },
+  "author": "odmueckays-Logos",
+  "build": {
+    "appId": "com.bibliotecadelcerro.app",
+    "productName": "Biblioteca Virtual",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "assets/**/*",
+      "index.html",
+      "editor.html",
+      "datos/muestra.json",
+      "node_modules/three/package.json",
+      "node_modules/three/build/**",
+      "node_modules/three/examples/jsm/**",
+      "node_modules/@fontsource/**",
+      "!**/*.map",
+      "!**/{.eslintrc,.editorconfig,.travis.yml,appveyor.yml}"
+    ],
+    "win": {
+      "icon": "build/icono.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Biblioteca Virtual",
+      "artifactName": "Biblioteca-Virtual-instalador-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "Biblioteca-Virtual-portable-${version}.${ext}"
+    }
   }
 }

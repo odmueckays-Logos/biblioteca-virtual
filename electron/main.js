@@ -3,9 +3,9 @@
 // La carpeta del proyecto se sirve por el protocolo app:// para que los módulos ES,
 // las fuentes y los modelos .glb se carguen igual que en un servidor web.
 // El contenido se guarda en datos/ a través del almacén local (almacen.js).
-const { app, BrowserWindow, Menu, dialog, ipcMain, net, protocol, session } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain, protocol, session } = require('electron');
+const fs = require('node:fs');
 const path = require('node:path');
-const { pathToFileURL } = require('node:url');
 const { Almacen } = require('./almacen');
 
 const ROOT = path.join(__dirname, '..');
@@ -13,8 +13,17 @@ const DEBUG = process.argv.includes('--debug');
 const argumento = (nombre) => process.argv.find((a) => a.startsWith(`${nombre}=`))?.slice(nombre.length + 1);
 // Carpeta del contenido: datos/ del proyecto, u otra con `--datos=carpeta`
 // (sirve para probar sin tocar el contenido de verdad).
-const DATOS = argumento('--datos') ? path.resolve(argumento('--datos')) : path.join(ROOT, 'datos');
-const almacen = new Almacen(DATOS);
+//
+// En la app instalada esa carpeta no vale: lo que va dentro del programa es de
+// solo lectura y el bibliotecario tiene que poder guardar. Así que el contenido
+// va a la carpeta del usuario (en Windows, AppData\Roaming\Biblioteca Virtual// datos) y la primera vez se copia de la muestra que viene en el programa.
+const MUESTRA = path.join(ROOT, 'datos', 'muestra.json');
+const DATOS = argumento('--datos')
+  ? path.resolve(argumento('--datos'))
+  : app.isPackaged
+    ? path.join(app.getPath('userData'), 'datos')
+    : path.join(ROOT, 'datos');
+const almacen = new Almacen(DATOS, MUESTRA);
 let biblioteca = null;
 let editor = null;
 
@@ -111,16 +120,50 @@ protocol.registerSchemesAsPrivileged([
   },
 ]);
 
+// Tipos de archivo que sirve el protocolo app://. El navegador es estricto: un
+// módulo servido como «datos sin más» no lo ejecuta.
+const TIPOS = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.gif': 'image/gif',
+  '.woff2': 'font/woff2',
+  '.woff': 'font/woff',
+  '.ttf': 'font/ttf',
+  '.glb': 'model/gltf-binary',
+  '.gltf': 'model/gltf+json',
+  '.txt': 'text/plain; charset=utf-8',
+  '.md': 'text/markdown; charset=utf-8',
+};
+
 // Sirve los archivos del proyecto; lo que está bajo datos/ sale de la carpeta del
 // contenido (que puede estar en otro sitio).
+//
+// Se leen con `fs` y no con el cargador de red por la app empaquetada: ahí los
+// archivos del programa viven dentro de app.asar, que `fs` sabe abrir y el
+// cargador de red no (devolvía «archivo no encontrado» y la ventana salía negra).
 function serveProjectFiles() {
-  protocol.handle('app', (request) => {
+  protocol.handle('app', async (request) => {
     const pathname = decodeURIComponent(new URL(request.url).pathname);
     const base = pathname.startsWith('/datos/') ? DATOS : ROOT;
     const rel = pathname.startsWith('/datos/') ? pathname.slice('/datos/'.length) : pathname;
     const filePath = path.normalize(path.join(base, rel));
-    if (!filePath.startsWith(base)) return new Response('Forbidden', { status: 403 });
-    return net.fetch(pathToFileURL(filePath).toString());
+    if (!filePath.startsWith(base)) return new Response('Prohibido', { status: 403 });
+    try {
+      const contenido = await fs.promises.readFile(filePath);
+      const tipo = TIPOS[path.extname(filePath).toLowerCase()] || 'application/octet-stream';
+      return new Response(contenido, { headers: { 'content-type': tipo } });
+    } catch (err) {
+      if (err.code !== 'ENOENT') console.error(`[app://] no se pudo leer ${rel}:`, err.message);
+      return new Response('No encontrado', { status: err.code === 'ENOENT' ? 404 : 500 });
+    }
   });
 }
 
@@ -218,7 +261,7 @@ function createWindow() {
           await new Promise((r) => setTimeout(r, 900));
         }
         const image = await win.webContents.capturePage();
-        require('node:fs').writeFileSync(capture.slice('--capture='.length), image.toPNG());
+        fs.writeFileSync(capture.slice('--capture='.length), image.toPNG());
         console.log('[captura] guardada');
         app.quit();
       }, Number(process.env.CAPTURE_DELAY || 15000));
@@ -418,7 +461,6 @@ async function medir(win) {
 // se reordene, camina hasta el estante nuevo, toma el libro y pasa páginas.
 // Guarda capturas de las dos ventanas e imprime lo que va pasando.
 async function probarEditor() {
-  const fs = require('node:fs');
   const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
   const carpeta = argumento('--capturas') || require('node:os').tmpdir();
   fs.mkdirSync(carpeta, { recursive: true });

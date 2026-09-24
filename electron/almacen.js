@@ -13,10 +13,14 @@ const path = require('node:path');
 const EXTENSIONES = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
 
 class Almacen {
-  constructor(carpeta) {
+  // `muestra` es de dónde sale el contenido inicial la primera vez. Normalmente
+  // está en la misma carpeta, pero en la app instalada los archivos del programa
+  // son de solo lectura: entonces el contenido se guarda en la carpeta del usuario
+  // y la muestra se lee de los archivos del programa.
+  constructor(carpeta, muestra = null) {
     this.carpeta = carpeta;
     this.archivo = path.join(carpeta, 'biblioteca.json');
-    this.muestra = path.join(carpeta, 'muestra.json');
+    this.muestra = muestra || path.join(carpeta, 'muestra.json');
     this.imagenes = path.join(carpeta, 'imagenes');
     this.oyentes = new Set();
     this.ultimoEscrito = '';

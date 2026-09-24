@@ -8,6 +8,9 @@ datos/biblioteca.json
 datos/biblioteca.json.bak
 datos/imagenes/
 
+# El ejecutable empaquetado (pesa cientos de MB; va en las publicaciones de GitHub)
+dist/
+
 # Capturas y salidas de las pruebas
 capturas/
 *.log
