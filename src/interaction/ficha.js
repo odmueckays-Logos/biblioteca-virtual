@@ -274,9 +274,12 @@ export function dibujarCartel(estante, rumbo = 1) {
 export class Ficha {
   constructor(scene) {
     // Papel de verdad: recibe la luz de la sala, pero lleva algo de emisión propia
-    // para que siga leyéndose dentro del estante, que está en sombra. Poca: con
-    // más, al sol el papel pasaba de largo el umbral del resplandor y su propio
-    // halo se comía el texto.
+    // para que siga leyéndose dentro del estante, que está en sombra.
+    //
+    // La tarjeta va en la capa de encima (`rig.encima`, en main.js): se dibuja
+    // cuando el resplandor ya pasó. Antes se dibujaba con todo lo demás y el
+    // resplandor le devolvía encima el halo de los lomos que quedaban detrás:
+    // sobre el mismo cartel, el contraste del texto pasó del 11 % al 31 %.
     this.mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(CARD_W, CARD_H),
       new THREE.MeshStandardMaterial({

@@ -1,5 +1,8 @@
 // Render con postprocesado: oclusión ambiental (GTAO), profundidad de campo,
 // resplandor suave, mapeo de tonos y un acabado con viñeta y grano.
+//
+// Las tarjetas (fichas y carteles) no pasan por todo eso: van en una capa aparte
+// que se dibuja cuando el resplandor ya pasó. Ver CAPA_ENCIMA.
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -23,6 +26,23 @@ class VisibilityPass extends Pass {
     for (const o of this.objects) o.visible = this.visible && o.userData.wantsVisible !== false;
   }
 }
+
+// La capa de encima. Lo que se pone aquí sale del render de la escena y se
+// dibuja al final, sobre la imagen ya terminada: los carteles de los estantes se
+// volvían ilegibles porque el resplandor toma la imagen ya compuesta y le
+// devuelve el halo de los lomos brillantes encima de la tarjeta. Un cartel que no
+// se lee no sirve de nada.
+//
+// Se dibuja sobre el lienzo, no como una pasada más del compositor: los búferes
+// del compositor llevan el suavizado de la tarjeta gráfica y, al resolverlos, se
+// descartan; dibujar en uno ya resuelto borraba la sala entera y dejaba la
+// tarjeta flotando en negro.
+//
+// A cambio, a la tarjeta no le llegan ni la viñeta ni el grano del acabado: en
+// una esquina se ve un poco más clara que lo que la rodea. Se prefiere así, que
+// para eso es un cartel. Sí lleva la luz de la sala y el mapeo de tonos, que es
+// lo que la hace parecer un papel y no una etiqueta pegada a la pantalla.
+export const CAPA_ENCIMA = 1;
 
 const FinishShader = {
   uniforms: {
@@ -123,6 +143,7 @@ export function createRenderer(canvas, scene, camera, ajustes = {}) {
 
   let settings = { ...CALIDADES.alta, ...ajustes };
   const translucent = [];
+  const capa = []; // lo que se dibuja encima del resplandor
 
   let composer;
   let gtaoPass;
@@ -214,6 +235,26 @@ export function createRenderer(canvas, scene, camera, ajustes = {}) {
     renderer.shadowMap.needsUpdate = true;
   }
 
+  // Las tarjetas de la capa de encima, con la sala ya compuesta. La profundidad
+  // se borra a propósito: aquí la tarjeta va siempre delante, que para eso es un
+  // cartel. Sin ninguna a la vista —lo habitual— no se dibuja nada.
+  function dibujarCapa() {
+    if (!capa.some((o) => o.visible)) return;
+    const mascara = camera.layers.mask;
+    const fondo = scene.background;
+    renderer.setRenderTarget(null);
+    // Sin autoClear no se borra el color... salvo que la escena tenga fondo: eso
+    // obliga a borrar y se llevaba la sala por delante. Se le quita mientras.
+    renderer.autoClear = false;
+    scene.background = null;
+    renderer.clearDepth();
+    camera.layers.set(CAPA_ENCIMA);
+    renderer.render(scene, camera);
+    camera.layers.mask = mascara;
+    scene.background = fondo;
+    renderer.autoClear = true;
+  }
+
   build();
   aplicarSombras();
 
@@ -245,6 +286,13 @@ export function createRenderer(canvas, scene, camera, ajustes = {}) {
       const i = translucent.indexOf(object);
       if (i >= 0) translucent.splice(i, 1);
     },
+    // A la capa de encima: se dibuja después del resplandor, así que ningún halo
+    // se le pone encima y se lee siempre. Sigue siendo un objeto de la escena,
+    // con la luz de la sala; solo cambia cuándo se dibuja.
+    encima(object) {
+      object.layers.set(CAPA_ENCIMA);
+      capa.push(object);
+    },
     // Cambia los ajustes que se le pasen y deja los demás como estaban. Encender
     // o apagar un efecto es inmediato; cambiar la resolución o el suavizado obliga
     // a rehacer las pasadas.
@@ -272,6 +320,7 @@ export function createRenderer(canvas, scene, camera, ajustes = {}) {
       bokehPass.enabled = settings.bokeh && dof.aperture > 0.00001;
       finishPass.uniforms.uTime.value = time;
       composer.render();
+      dibujarCapa();
     },
     setVignette(v) {
       finishPass.uniforms.uVignette.value = v;

@@ -304,6 +304,9 @@ async function main() {
   body.add(readingLight.target);
 
   const ficha = new Ficha(scene);
+  // La tarjeta se dibuja encima del resplandor: si no, el halo de los lomos que
+  // quedan detrás se le pone encima y no hay forma de leerla.
+  rig.encima(ficha.mesh);
   const gaze = new Gaze({ camera, reticle: ui.reticle, ficha, hoverLight });
   const sequence = new BookSequence({ scene, camera, look, arms, pages, rig, gaze, body, ui, readingLight });
 
