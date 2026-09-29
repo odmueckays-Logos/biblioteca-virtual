@@ -1,6 +1,6 @@
 {
   "name": "biblioteca-virtual",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Biblioteca virtual interactiva en primera persona (prototipo visual)",
   "main": "electron/main.js",

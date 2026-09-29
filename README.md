@@ -35,12 +35,12 @@ Para llevarla a una máquina que no tiene Node.js ni nada instalado:
 npm run empaquetar
 ```
 
-Deja dos archivos en `dist/`, de unos 118 MB cada uno (llevan dentro Electron, Node, Three.js, las tipografías y los modelos):
+Deja dos archivos en `dist/`, de unos 115 MB cada uno (llevan dentro Electron, Node, Three.js, las tipografías y los modelos):
 
 | Archivo | Para qué |
 |---|---|
-| `Biblioteca-Virtual-portable-0.1.0.exe` | Un solo archivo: se copia a un USB, doble clic y anda. No instala nada ni pide permisos de administrador. |
-| `Biblioteca-Virtual-instalador-0.1.0.exe` | Instalación normal, con acceso directo y desinstalador. Tampoco necesita administrador. |
+| `Biblioteca-Virtual-portable-0.1.1.exe` | Un solo archivo: se copia a un USB, doble clic y anda. No instala nada ni pide permisos de administrador. |
+| `Biblioteca-Virtual-instalador-0.1.1.exe` | Instalación normal, con acceso directo y desinstalador. Tampoco necesita administrador. |
 
 - **El contenido va aparte.** Dentro del programa los archivos son de solo lectura, así que la biblioteca vive en `%APPDATA%\Biblioteca Virtual\datos\`: ahí están `biblioteca.json`, su respaldo y las imágenes que suba el bibliotecario. La primera vez se crea a partir de la muestra que viaja dentro del programa, así que arranca con los cuatro libros de ejemplo. Para mudar una biblioteca de una computadora a otra, se copia esa carpeta.
 - **Windows va a desconfiar** la primera vez: «Windows protegió su PC» → *Más información* → *Ejecutar de todas formas*. Es porque el ejecutable no está firmado con un certificado (cuestan dinero y hay que renovarlos), no porque el programa tenga nada raro.
