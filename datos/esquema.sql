@@ -92,7 +92,7 @@ create or replace function biblioteca_entera() returns jsonb language sql stable
     'biblioteca', (select jsonb_build_object('nombre', nombre, 'lema', lema,
                             'disposicion', jsonb_build_object('niveles', niveles, 'modo', modo))
                    from biblioteca where id = 1),
-    'categorias', coalesce((select jsonb_agg(to_jsonb(c) - 'id' || jsonb_build_object('id', c.id) order by c.orden nulls last, c.nombre)
+    'categorias', coalesce((select jsonb_agg(to_jsonb(c) order by c.orden nulls last, c.nombre)
                             from categorias c), '[]'::jsonb),
     'libros', coalesce((select jsonb_agg(to_jsonb(l) order by l.orden nulls last, l.titulo) from libros l), '[]'::jsonb)
   );
@@ -210,9 +210,12 @@ insert into storage.buckets (id, name, public)
 values ('laminas', 'laminas', true)
 on conflict (id) do update set public = true;
 
+-- Solo hace falta permitir subir. Para *ver* las fotos no se necesita ninguna
+-- regla: un depósito público se sirve por su URL sin pasar por aquí. Una regla
+-- de lectura de más tiene un efecto que no se nota a primera vista —deja que
+-- cualquiera pida la lista entera de archivos del depósito—, y el propio panel
+-- de Supabase avisa de ello.
 drop policy if exists "ver laminas"    on storage.objects;
 drop policy if exists "subir laminas"  on storage.objects;
-create policy "ver laminas"   on storage.objects for select
-  using (bucket_id = 'laminas');
 create policy "subir laminas" on storage.objects for insert
   with check (bucket_id = 'laminas');
