@@ -19,6 +19,23 @@ const path = require('node:path');
 const EXTENSIONES = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
 const TIPOS = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.gif': 'image/gif' };
 
+// Dos bibliotecas dicen lo mismo aunque no se escriban igual: se ordenan las
+// claves antes de comparar, porque la nube las devuelve en el orden de la tabla.
+function canonico(valor) {
+  if (Array.isArray(valor)) return valor.map(canonico);
+  if (valor && typeof valor === 'object') {
+    return Object.keys(valor).sort().reduce((o, k) => {
+      if (valor[k] !== undefined && valor[k] !== '') o[k] = canonico(valor[k]); // los vacíos no distinguen
+      return o;
+    }, {});
+  }
+  return valor;
+}
+
+function mismoContenido(a, b) {
+  return !!b && JSON.stringify(canonico(a)) === JSON.stringify(canonico(b));
+}
+
 class Almacen {
   // `muestra` es de dónde sale el contenido inicial la primera vez. Normalmente
   // está en la misma carpeta, pero en la app instalada los archivos del programa
@@ -85,6 +102,16 @@ class Almacen {
     this.avisar();
   }
 
+  // Lo que hay guardado, o null si todavía no hay nada legible (sirve para
+  // comparar sin tener que envolver cada llamada en un try).
+  leerSinFallar() {
+    try {
+      return this.leer();
+    } catch {
+      return null;
+    }
+  }
+
   // ------------------------------------------------------------------- la nube
 
   // Arranca la sincronización: siembra la nube si está vacía, se trae lo que haya
@@ -117,7 +144,11 @@ class Almacen {
       if (!forzar && version !== null && version === this.versionLocal && fs.existsSync(this.archivo)) return false;
       const datos = await this.nube.leer();
       this.versionLocal = this.nube.version;
-      if (`${JSON.stringify(datos, null, 2)}\n` === this.ultimoEscrito) return false; // ya era lo que teníamos
+      // Si dice lo mismo que ya tenemos, no se toca nada. Se compara el contenido
+      // y no el texto: la nube devuelve las columnas en su orden, así que dos
+      // bibliotecas idénticas se escriben distinto. Sin esto, la sala se
+      // reordenaba una segunda vez después de cada guardado, por nada.
+      if (mismoContenido(datos, this.leerSinFallar())) return false;
       this.escribirArchivo(datos);
       this.avisar();
       return true;

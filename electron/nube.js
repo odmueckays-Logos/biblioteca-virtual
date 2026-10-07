@@ -141,11 +141,15 @@ class Nube {
     });
   }
 
+  // La fecha de modificación la pone quien edita (prepararLibro), no esta capa:
+  // si la cambiáramos aquí, lo guardado en la nube y lo guardado en la copia
+  // local se diferenciarían en unos milisegundos, y la siguiente sincronización
+  // creería que alguien tocó el libro y reordenaría la sala por nada.
   async guardarLibro(libro) {
     await this.rest('libros', '', {
       method: 'POST',
       headers: { prefer: 'resolution=merge-duplicates' },
-      body: JSON.stringify(aFila({ ...libro, actualizado: new Date().toISOString() })),
+      body: JSON.stringify(aFila(libro)),
     });
   }
 

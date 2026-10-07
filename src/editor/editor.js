@@ -216,12 +216,15 @@ function campo(etiqueta, control, { ayuda = '', obligatorio = false, contador = 
 }
 
 // Entrada de texto enlazada a una propiedad del borrador.
+// Un campo enlazado a una propiedad. Aguanta que el objeto no esté: un campo que
+// no se puede enlazar sale vacío y en blanco, pero el formulario entero se dibuja.
 function entrada(obj, prop, attrs = {}) {
   return h('input', {
     type: 'text',
-    value: obj[prop] ?? '',
+    value: obj?.[prop] ?? '',
     ...attrs,
     oninput: (e) => {
+      if (!obj) return;
       obj[prop] = attrs.type === 'number' ? (e.target.value === '' ? null : Number(e.target.value)) : e.target.value;
       marcarCambio();
     },
@@ -287,9 +290,22 @@ function renderPanel() {
       !fuente.editable ? h('p', {}, h('strong', {}, 'Ahora estás en modo de solo lectura: para guardar, abre la app de escritorio (npm start) y pulsa Ctrl+E.')) : null));
     return;
   }
-  if (sel.tipo === 'libro') formLibro(panel);
-  else if (sel.tipo === 'disposicion') formDisposicion(panel);
-  else formCategoria(panel);
+  // Si dibujar el formulario falla, el panel se queda vacío: ni campos, ni botón
+  // de guardar, ni una pista de qué pasó. Mejor decirlo y dejar volver atrás, que
+  // un formulario roto con el trabajo a medias dentro es lo peor que puede pasar
+  // aquí.
+  try {
+    if (sel.tipo === 'libro') formLibro(panel);
+    else if (sel.tipo === 'disposicion') formDisposicion(panel);
+    else formCategoria(panel);
+  } catch (err) {
+    console.error('No se pudo dibujar el formulario:', err);
+    panel.replaceChildren(h('div', { class: 'inicio' },
+      h('h1', {}, 'Se rompió el formulario'),
+      h('p', {}, 'No se pudo dibujar esta ficha, así que no se perdió nada: lo que había guardado sigue en su sitio.'),
+      h('p', { class: 'ayuda' }, String(err && err.message ? err.message : err)),
+      h('button', { type: 'button', class: 'boton', onclick: () => seleccionar(null, null, { preguntar: false }) }, 'Volver a la lista')));
+  }
 }
 
 // ------------------------------------------------------------------ libro
@@ -566,7 +582,12 @@ async function guardarLibro() {
   b.secciones = (b.secciones || []).filter((s) => (s.titulo || '').trim() || (s.texto || '').trim());
   b.notas = (b.notas || []).map((n) => n.trim()).filter(Boolean);
   b.imagenes = (b.imagenes || []).filter((i) => (i.ruta || '').trim());
-  if (b.altitud && (b.altitud.min === null || b.altitud.min === '') && (b.altitud.max === null || b.altitud.max === '')) b.altitud = null;
+  // La altitud vacía NO se pone en null aquí: el formulario sigue enlazado a este
+  // mismo objeto, y si la validación falla hay que volver a dibujarlo. Dejarlo en
+  // null hacía que el campo de altitud leyera `null.min` al redibujar y el panel
+  // se quedaba en blanco, sin formulario y sin decir qué faltaba. Para guardar ya
+  // la normaliza prepararLibro, y para validar `{ min: null, max: null }` cuenta
+  // igual que vacía.
   if (b.orden === '' || Number.isNaN(b.orden)) b.orden = null;
   const lista = validarLibro(b, datos.categorias);
   errores = lista.map((texto) => ({ texto, clave: claveError(texto) }));

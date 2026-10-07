@@ -70,6 +70,21 @@ async function main() {
     assert.deepEqual(vuelta.altitud, { min: 300, max: 1500 });
   });
 
+  await prueba('lo que guarda uno no se lo vuelve a bajar como si fuera nuevo', async () => {
+    // Al guardar sube la versión, así que el siguiente sondeo se baja la
+    // biblioteca otra vez. Si no reconociera que dice lo mismo, avisaría de un
+    // cambio que no existe y la sala se reordenaría por nada delante de quien la
+    // esté mirando.
+    let avisos = 0;
+    const dejar = almacen.alCambiar(() => { avisos++; });
+    const libro = { ...almacen.leer().libros.find((l) => l.id === 'ceibo'), ficha: 'Cambiada otra vez.' };
+    await almacen.guardarLibro(libro);
+    assert.equal(avisos, 1, 'el guardado avisa una vez, el suyo');
+    assert.equal(await almacen.sincronizar(), false, 'y el sondeo siguiente no trae nada');
+    assert.equal(avisos, 1, 'así que no hay un segundo aviso');
+    dejar();
+  });
+
   await prueba('el cambio de otra persona llega solo y queda en la caché', async () => {
     await fetch(`${falsa.url}/__otro-usuario`, { method: 'POST' });
     let aviso = 0;
@@ -118,8 +133,7 @@ async function main() {
   });
 
   await prueba('un cambio rechazado por la nube no se guarda a medias', async () => {
-    const guardado = almacen.leer().libros.find((l) => l.id === 'ceibo');
-    assert.equal(guardado.ficha, 'Cambiado desde otra computadora.', 'el intento anterior no dejó rastro');
+    assert.ok(!almacen.leer().libros.some((l) => l.ficha === 'A ver si cuela.'), 'el intento sin conexión no dejó rastro en la caché');
   });
 
   almacen.cerrar();
