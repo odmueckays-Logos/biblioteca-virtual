@@ -279,7 +279,11 @@ function createWindow() {
 
   win.webContents.on('before-input-event', (event, input) => {
     if (input.type !== 'keyDown') return;
-    if (input.key === 'F11') {
+    // F11 en todas partes y, en macOS, también ⌃⌘F, que es la de allá (F11 se la
+    // queda el sistema para mostrar el escritorio).
+    const pantallaCompleta = input.key === 'F11'
+      || (process.platform === 'darwin' && input.control && input.meta && input.key.toLowerCase() === 'f');
+    if (pantallaCompleta) {
       win.setFullScreen(!win.isFullScreen());
       event.preventDefault();
     } else if (input.key === 'F12') {
@@ -806,7 +810,13 @@ async function probarEditor() {
 }
 
 app.whenReady().then(() => {
-  Menu.setApplicationMenu(null);
+  // Sin menú: la biblioteca es la interfaz. En macOS no se puede dejar en nada,
+  // porque el menú es de donde cuelgan ⌘Q, ⌘W y —lo importante— cortar, copiar
+  // y pegar: sin él no se puede pegar un texto en el modo bibliotecario. Así que
+  // allá va el mínimo del sistema, sin nada propio.
+  Menu.setApplicationMenu(process.platform === 'darwin'
+    ? Menu.buildFromTemplate([{ role: 'appMenu' }, { role: 'editMenu' }, { role: 'windowMenu' }])
+    : null);
   serveProjectFiles();
   prepararPermisos();
   prepararAlmacen();

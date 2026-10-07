@@ -48,6 +48,25 @@ Deja dos archivos en `dist/`, de unos 115 MB cada uno (llevan dentro Electron, N
 - **Windows va a desconfiar** la primera vez: «Windows protegió su PC» → *Más información* → *Ejecutar de todas formas*. Es porque el ejecutable no está firmado con un certificado (cuestan dinero y hay que renovarlos), no porque el programa tenga nada raro.
 - Lo de `dist/` no se sube al repositorio: se publica como *release* en GitHub.
 
+### En una Mac
+
+El programa es el mismo —Electron y Three.js andan igual en macOS— y no hay nada escrito para Windows en el código. Dos caminos:
+
+- **Desde el código**, que es lo más rápido para probar: con Node.js instalado, `npm install` y `npm start`.
+- **Como aplicación**: `npm run empaquetar-mac` deja en `dist/` un `.dmg` para Apple Silicon y otro para Intel. Hay que ejecutarlo **en una Mac**: el `.dmg` solo se arma desde macOS.
+
+La primera vez, macOS dirá que la app es de un desarrollador no identificado, porque no está firmada con un certificado de Apple (son de pago y hay que renovarlos cada año): clic derecho sobre la app → *Abrir* → *Abrir*, o *Ajustes del Sistema → Privacidad y seguridad → Abrir de todos modos*.
+
+Lo que cambia respecto de Windows:
+
+| | Windows | macOS |
+|---|---|---|
+| Modo bibliotecario | Ctrl+E | **⌘E** (Ctrl+E también) |
+| Pantalla completa | F11 | **⌃⌘F** (F11 se la queda el sistema) |
+| Dónde se guarda la biblioteca | `%APPDATA%\Biblioteca Virtual\datos\` | `~/Library/Application Support/Biblioteca Virtual/datos/` |
+
+En macOS la app lleva el menú mínimo del sistema (aplicación, edición y ventana). No es decorado: de ahí cuelgan ⌘Q y, sobre todo, cortar, copiar y pegar, que sin menú no funcionan en los formularios del modo bibliotecario.
+
 ## Controles
 
 | Acción | Cómo |
