@@ -840,6 +840,15 @@ async function main() {
   }, 26000);
   console.info(`Arranque: ${marcas.join(' · ')}`);
   console.info(`Biblioteca: ${mundo.shelves.length} estantes en ${mundo.org.rejilla.columnas} columnas y ${mundo.niveles} ${mundo.niveles === 1 ? 'nivel' : 'niveles'}, ${mundo.books.length} libros · fuente: ${fuente.nombre}`);
+  // Si la biblioteca es compartida, se dice al arrancar y cada vez que la
+  // conexión se cae o vuelve: quien la usa tiene que saber si está viendo lo
+  // último o una copia guardada.
+  const contarNube = (e) => {
+    if (!e?.configurada) return;
+    console.info(`Nube: ${e.conectada ? `al día (versión ${e.version})` : `sin conexión, se ve la última copia guardada · ${e.mensaje}`}`);
+  };
+  fuente.estado?.().then(contarNube).catch(() => {});
+  fuente.alCambiarEstado?.(contarNube);
 
   if (DEBUG) {
     const bookById = (id) => mundo.books.find((b) => b.content.id === id);

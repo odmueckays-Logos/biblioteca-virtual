@@ -4,13 +4,15 @@ Experiencia en primera persona en una galería de estantes antiguos. Cada estant
 
 Es una app de escritorio hecha con Electron y Three.js:
 
-- **El contenido no está en el código.** Sale de una fuente de datos: hoy es el archivo `datos/biblioteca.json` y mañana será una base de datos.
+- **El contenido no está en el código.** Sale de una fuente de datos: el archivo `datos/biblioteca.json` o, si está configurada, la biblioteca compartida en la nube.
 - **Se ordena sola.** Con esos datos, la biblioteca reparte los libros en su estante, les da tomo y signatura y arma la sala.
 - **Los estantes se acoplan.** Van uno al lado de otro o **uno encima de otro**, formando una pared: así se ven varias categorías desde el mismo sitio y no hay que caminar toda la galería para buscar. A los de arriba se llega con la escalera rodante. Quién va dónde se elige en el modo bibliotecario, y lo que no se elija se acomoda solo.
 - **Se edita desde la app.** El **modo bibliotecario** es una ventana aparte para agregar, editar y quitar libros y categorías. Al guardar, la biblioteca se reordena sin cerrarla.
 - **Se adapta a la máquina.** Con la tecla **O** se elige la calidad de imagen, y si la computadora va justa la biblioteca lo nota sola y se aligera.
 
-Todavía no usa base de datos, cuentas ni servicios externos: todo funciona sin conexión. Está preparada para conectarse a una base de datos (ver [Conectar una base de datos](#conectar-una-base-de-datos)).
+- **Es de todos.** Conectada a la nube, la biblioteca es una sola: quien instale el programa la ve entera, puede editarla y lo que guarde les llega a los demás en segundos. Sin conexión se sigue viendo, con la última copia guardada (ver [La biblioteca compartida](#la-biblioteca-compartida)).
+
+Sin nube configurada funciona igual que siempre, entera y sin conexión: no hace falta cuenta ni servicio externo para usarla.
 
 ## Cómo ejecutarla
 
@@ -116,17 +118,19 @@ Lo hace el bibliotecario automático (`src/datos/organizar.js`):
 
 ```
 electron/main.js           ventanas (biblioteca y modo bibliotecario) y protocolo app://
-electron/almacen.js        almacén local: lee y guarda datos/ (hace de base de datos)
+electron/almacen.js        lee y guarda datos/; con nube, hace de caché y de respaldo
 electron/preload.js        puente seguro entre las ventanas y el almacén
 index.html, src/styles.css capas mínimas: retícula, indicaciones y velos
 editor.html, src/editor/   modo bibliotecario (formulario y vista previa)
 datos/biblioteca.json      el contenido: categorías y libros
 datos/imagenes/            imágenes subidas desde el editor
 datos/muestra.json         contenido de muestra (para volver a empezar)
-datos/esquema.sql          tablas para la futura base de datos
+electron/nube.js           la biblioteca compartida: tablas, fotos y avisos de cambio
+datos/nube.json            dirección y clave de la nube (vacío = biblioteca local)
+datos/esquema.sql          las tablas, los permisos y los respaldos (se pega en Supabase)
 src/datos/modelo.js        formato de los datos, valores por defecto y validaciones
 src/datos/organizar.js     reparte los libros en estantes y los estantes en la pared
-src/datos/fuente.js        de dónde salen los datos (aquí se conecta la base de datos)
+src/datos/fuente.js        de dónde salen los datos (el archivo o, por detrás, la nube)
 src/main.js                arranque, armado de la sala, recorrido, entrada y recarga
 src/core/                  render y postproceso, mirada con el mouse, animaciones y utilidades
 src/scene/                 texturas procedurales, sala-galería, estantes acoplables, escalera y lomos
@@ -138,6 +142,9 @@ assets/models/brazos.glb   brazos y manos recortados del avatar (con su esquelet
 assets/textures/           piel y ropa del avatar (color, relieve y rugosidad)
 tools/dev-server.py        servidor local para probar en un navegador (solo lectura)
 tools/probar-disposicion.mjs prueba del acoplamiento de estantes (`npm run probar`)
+tools/nube-falsa.js        una nube de mentira para las pruebas (sin internet)
+tools/probar-nube.js       prueba de la biblioteca compartida (`npm run probar-nube`)
+assets/laminas/            las fotos que vienen dentro del programa
 ```
 
 ## El formato de los datos
@@ -179,31 +186,64 @@ tools/probar-disposicion.mjs prueba del acoplamiento de estantes (`npm run proba
 
 > Los textos de muestra son generales. Verifícalos con fuentes especializadas antes de presentarlos.
 
-## Conectar una base de datos
+## La biblioteca compartida
 
-La escena y el editor no leen el archivo directamente: le piden los datos a una **fuente** (`src/datos/fuente.js`). Para pasar a una base de datos basta con escribir otra fuente con los mismos métodos:
+La biblioteca puede vivir en la nube. Entonces es **una sola para todos**: quien instale el programa la ve completa, puede editarla, y lo que guarde les aparece a los demás en unos segundos. Sin nube configurada, el programa funciona exactamente igual que antes, con su biblioteca en esta computadora.
+
+Está hecha sobre **Supabase** (PostgreSQL + almacenamiento de archivos), pero nada del programa depende de Supabase en particular: todo pasa por `electron/nube.js`, que son peticiones HTTP normales. Cambiar de proveedor es reescribir esa clase.
+
+### Cómo está armado
+
+- **La nube vive en el proceso principal**, no en las ventanas (`electron/nube.js` + `electron/almacen.js`). Así las dos ventanas —la sala y el modo bibliotecario— se sincronizan por el mismo camino, y la escena no se entera: le sigue pidiendo los datos a su fuente de siempre (`src/datos/fuente.js`).
+- **El archivo local pasa a ser caché y respaldo.** `datos/biblioteca.json` guarda lo último que se bajó: por eso la sala se ve completa aunque no haya internet.
+- **Primero la nube, después el archivo.** Un cambio se escribe en la nube y solo si la nube lo acepta se guarda aquí. Nadie se queda con una edición que los demás no tienen.
+- **Sin conexión no se puede editar**, y se dice con todas las letras en el modo bibliotecario. Un cambio hecho a solas lo borraría la siguiente sincronización sin avisar.
+- **Cómo se enteran todos.** La tabla `biblioteca` tiene un número de versión que sube con cada cambio (lo hace un disparador en la base, no el programa). Preguntar por ese número es la consulta más barata que existe —un entero—, así que se pregunta cada diez segundos; cuando cambia, se baja la biblioteca entera. Es más simple y más robusto que mantener un socket abierto, y diez segundos no se notan.
+- **Las fotos** que sube el bibliotecario van a un depósito público (`laminas`) y en `imagenes[].ruta` queda su URL. Las láminas que vienen dentro del programa (`assets/laminas/…`) no se suben: ya las tiene todo el mundo, y se ven sin internet. Si una foto de la nube no se puede bajar, en su lugar se dibuja la lámina de siempre y la página no se rompe.
+- **Respaldos.** Cada cambio deja una copia entera de la biblioteca en la tabla `respaldos` (se guardan las últimas 200). Desde la app se pueden crear y leer, nunca borrar ni modificar: si alguien vacía la biblioteca, la copia de antes sigue ahí.
+
+### Conectarla a tu propio proyecto
+
+1. **Crear el proyecto.** En [supabase.com](https://supabase.com), proyecto nuevo (el plan gratis alcanza de sobra). De *Project Settings → Data API* se copian la **Project URL** y la **clave publicable**.
+2. **Crear las tablas.** *SQL Editor → New query*, pegar entero `datos/esquema.sql` y *Run*. Eso crea las tablas, los permisos, los respaldos, la función para volver atrás y el depósito `laminas`. Se puede volver a ejecutar sin romper nada.
+3. **Apuntar el programa.** Escribir la dirección y la clave en `datos/nube.json`:
+
+   ```json
+   { "url": "https://xxxxxxxx.supabase.co", "clave": "sb_publishable_…", "bucket": "laminas" }
+   ```
+
+4. **Sembrarla.** La primera vez que arranca con la nube vacía, el programa sube lo que tenga en `datos/biblioteca.json`; si ese archivo no existe, sube `datos/muestra.json`. Para empezar limpio, se borra `datos/biblioteca.json` antes de arrancar.
+
+Para probar sin tocar la nube: `electron . --sin-nube`. Para apuntar a otra sin tocar el archivo: `--nube-url=… --nube-clave=…`.
+
+### La clave y los permisos
+
+La clave que viaja dentro del programa es la **publicable**, que está pensada para eso: es pública a propósito, y lo que se puede hacer con ella lo decide la base, no el secreto. Aquí se decidió que **cualquiera con el programa puede leer y escribir**, que era el objetivo: una biblioteca que crece entre todos.
+
+La contrapartida hay que decirla: el repositorio es público, así que cualquiera podría vaciar la biblioteca. Por eso están los respaldos, que no se pueden borrar desde la app. Para volver atrás, en el *SQL Editor*:
+
+```sql
+select id, cuando, quien from respaldos order by id desc limit 20;
+select restaurar(123);
+```
+
+Si algún día hace falta cerrarla, se cambia una línea de `datos/esquema.sql`: las políticas de escritura pasan de `using (true)` a `to authenticated`, y a editar entra quien tenga cuenta.
+
+### Si se cambia de proveedor
+
+La escena y el editor no leen la base: le piden los datos a una **fuente** (`src/datos/fuente.js`), y la nube está detrás de ella. Para mudarse a otro servicio se reescribe `electron/nube.js` con estos métodos:
 
 | Método | Qué hace |
 |---|---|
-| `cargar()` | devuelve `{ biblioteca, categorias, libros }` con el formato de arriba |
-| `guardarBiblioteca(datos)` | guarda nombre, lema y disposición de la pared |
-| `guardarLibro(libro)` | crea o actualiza un libro (ya viene con id, signatura y fechas) |
-| `eliminarLibro(id)` | quita un libro |
+| `leer()` | devuelve `{ biblioteca, categorias, libros }` con el formato de arriba |
+| `consultarVersion()` | un entero que sube con cada cambio (para saber si hay algo nuevo) |
+| `guardarBiblioteca(datos)` | nombre, lema y disposición de la pared |
+| `guardarLibro(libro)` / `eliminarLibro(id)` | crear, actualizar o quitar un libro |
 | `guardarCategoria(cat)` / `eliminarCategoria(id)` | lo mismo para categorías |
-| `subirImagen(archivo)` | sube la imagen y devuelve su URL (va en `imagenes[].ruta`) |
-| `alCambiar(fn)` | avisa cuando el contenido cambia (para que la biblioteca se reordene sola) |
-| `editable` | `true` si se puede escribir |
+| `subirImagen(nombre, bytes, tipo)` | sube la foto y devuelve su URL pública |
+| `sembrarSiVacia(datos)` | la primera vez, sube la biblioteca entera |
 
-Pasos:
-
-1. **Crear las tablas.** Usa `datos/esquema.sql` (PostgreSQL; sirve tal cual en Supabase) y carga el contenido de `datos/biblioteca.json`.
-2. **Escribir la fuente.** Una clase en `src/datos/`, por ejemplo `FuenteSupabase`, que convierta `altitud_min`/`altitud_max` en `altitud: { min, max }`. Hay que devolverla en `crearFuente()`.
-3. **Avisar de los cambios.** Para `alCambiar`, usar las suscripciones en tiempo real de la base (en Supabase, *Realtime*). Así, lo que suba cualquier bibliotecario aparece solo en todas las bibliotecas abiertas.
-4. **Guardar las imágenes.** Van a un almacenamiento público de la base y en `imagenes[].ruta` se guarda la URL completa (en la base, la tabla `laminas`). El servidor debe permitir CORS, porque las páginas usan la imagen como textura.
-5. **Permitir la conexión.** En la CSP de `index.html` y `editor.html`, agregar el dominio de la base en `connect-src` y en `img-src`.
-6. **Proteger la escritura.** Cuando haya cuentas, leer puede ser libre, pero guardar debe exigir sesión (hay un ejemplo de reglas al final de `esquema.sql`).
-
-Las reglas (validaciones, signaturas, orden de los estantes) están en `src/datos/`, del lado de la app, y siguen valiendo igual con la base de datos.
+Las reglas (validaciones, signaturas, orden de los estantes) están en `src/datos/`, del lado de la app, y siguen valiendo igual con cualquier base de datos.
 
 ## Decisiones de diseño
 
@@ -232,6 +272,10 @@ Las reglas (validaciones, signaturas, orden de los estantes) están en `src/dato
 - **Las sombras se congelan.** Con la escena quieta no hay nada que mover, así que el mapa de sombras no se vuelve a dibujar: se marca para actualizar cuando alguien camina, sube, toma un libro o cambia la luz (`shadowMap.autoUpdate` en `src/main.js`). Los primeros cuadros se dibujan sí o sí: si el mapa no llega a crearse, la sala sale negra.
 - **Tope de cuadros.** Poner tope no es dormir el bucle: se cuenta el próximo cuadro de tope en tope, porque con «han pasado 16 ms» y una pantalla de 144 Hz un tope de 60 daría 48.
 - **Calidad automática.** Si dos medidas seguidas bajan de 42 cuadros por segundo, se baja un escalón (alta → media → baja) y se avisa con un cartel; de ahí en adelante decide el usuario en el panel (`CALIDADES` en `src/core/renderer.js`).
+- **La nube va detrás del puente, no en la ventana.** Lo natural parecía escribir otra fuente de datos en `src/datos/` que hablara con la base; se hizo en el proceso principal (`electron/nube.js`). Así las dos ventanas —la sala y el modo bibliotecario— se sincronizan por el mismo camino en vez de cada una por su cuenta, el archivo local sigue siendo la caché y el respaldo, y la escena no se enteró de nada: le pide los datos a la misma fuente de siempre. De paso, las páginas no necesitan permiso para hablar con internet.
+- **Preguntar un número en vez de mantener un socket.** Para que un cambio llegue a todos había dos caminos: suscripciones en tiempo real o preguntar cada tanto. Se eligió preguntar: un disparador en la base sube un contador con cada edición, y el programa consulta ese entero cada diez segundos. Es una consulta mínima, no se cae si la red va mal, no hay que reconectar nada, y diez segundos de retraso en una biblioteca que se edita de vez en cuando no los nota nadie.
+- **Primero la nube, después el archivo; y sin conexión no se edita.** Un cambio se guarda en la nube y solo si la nube lo acepta se escribe aquí: así nadie se queda con una edición que los demás no tienen. Y sin conexión el modo bibliotecario lo dice y no deja guardar, porque un cambio hecho a solas lo borraría la siguiente sincronización sin avisar. Mirar la biblioteca, en cambio, funciona siempre: para eso está la caché.
+- **La clave es pública y los respaldos no se borran.** La clave que viaja en el programa es la publicable de Supabase, pensada para ir en el cliente: lo que se puede hacer con ella lo decide la base. Como cualquiera puede editar, cualquiera puede equivocarse, así que cada cambio deja una copia entera de la biblioteca en la tabla `respaldos`, y desde la app solo se pueden crear y leer, nunca borrar. Volver atrás es `select restaurar(123);` en el panel.
 - **Los complementos de Three.js viajan al lado.** El postprocesado y el cargador de modelos viven en `node_modules/three/examples/jsm`, y el empaquetador descarta por su cuenta cualquier carpeta `examples` de `node_modules`: sin ellos la app se quedaba para siempre en la portada, sin un solo error en pantalla. Se copian aparte, a `resources/three-addons`, y el servidor de archivos los busca ahí cuando la app está empaquetada (`deDonde` en `electron/main.js`).
 - **Los archivos se sirven con `fs`.** La app carga sus módulos, tipografías y modelos por el protocolo `app://`. Al empaquetarla, todo eso queda dentro de `app.asar`, que el cargador de red de Chromium no sabe abrir: la ventana salía negra con «archivo no encontrado». Se leen con `fs` (que sí entiende el asar) y se devuelven con su tipo de contenido a mano, porque un módulo servido como «datos sin más» el navegador no lo ejecuta.
 - **Todo procedural.** Madera, piedra, cuero, papel, lomos, páginas e ilustraciones se generan en canvas al iniciar; las únicas imágenes son las que sube el bibliotecario.
@@ -241,6 +285,8 @@ Las reglas (validaciones, signaturas, orden de los estantes) están en `src/dato
 - `npm run empaquetar` arma los ejecutables de Windows en `dist/` (instalador y portátil).
 - `npm run medir` (o `electron . --medir`) mide los cuadros por segundo apagando y encendiendo cada efecto, con la escena quieta y con un libro en la mano, e imprime una tabla con la tarjeta gráfica y el tamaño de la ventana.
 - `npm run probar` comprueba el acoplamiento de los estantes (sitios elegidos, apilado automático, huecos libres) y las reglas de las láminas (qué página les toca) sin abrir la app.
+- `npm run probar-nube` levanta una nube de mentira (`tools/nube-falsa.js`: lo justo de PostgREST y del depósito de archivos) y ejercita contra ella el camino real de todos los cambios: que se siembre sola la primera vez, que lo que guarda uno le llegue a los demás, que las fotos suban al depósito, que sin conexión se pueda mirar pero no editar, y que un cambio rechazado no se guarde a medias. No necesita internet ni un proyecto de verdad.
+- `electron . --sin-nube` ignora `datos/nube.json` y trabaja con la biblioteca de esta computadora; `--nube-url=… --nube-clave=…` apunta a otra sin tocar el archivo.
 - `npm run debug` abre la app con `window.__biblioteca` en la consola (F12). `__biblioteca.irA(2)` va al estante 3 (caminando o por la escalera); `__biblioteca.pared()` muestra en qué columna y nivel quedó cada uno; `__biblioteca.tomar('quenua')` toma un libro.
 - `electron . --datos=carpeta` usa otra carpeta de contenido: sirve para probar sin tocar `datos/`.
 - `electron . --demo` toma un libro del primer estante, pasa una página y mide los fps y las llamadas de dibujo.

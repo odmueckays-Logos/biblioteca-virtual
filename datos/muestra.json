@@ -2,7 +2,7 @@
   "formato": 1,
   "biblioteca": {
     "nombre": "Biblioteca del Cerro",
-    "lema": "Flora andina",
+    "lema": "Flora andina y de bosque seco",
     "disposicion": {
       "niveles": 2,
       "modo": "columnas"
@@ -29,6 +29,13 @@
       "codigo": "C",
       "orden": 3,
       "descripcion": "Plantas de olor intenso que se usan en infusiones, comidas y remedios caseros."
+    },
+    {
+      "id": "bosque-seco-ecuatorial",
+      "nombre": "Bosque seco ecuatorial",
+      "codigo": "D",
+      "orden": 4,
+      "descripcion": "Árboles y arbustos de la costa de Ecuador y el norte del Perú, que sueltan la hoja en la seca. Las fotos son del Bosque Protector Cerro Blanco, en Guayaquil."
     }
   ],
   "libros": [
@@ -259,6 +266,449 @@
       "muestra": true,
       "creado": "2026-09-18T12:00:00.000Z",
       "actualizado": "2026-09-18T12:00:00.000Z"
+    },
+    {
+      "id": "cerro-blanco",
+      "categoria": "bosque-seco-ecuatorial",
+      "titulo": "Cerro Blanco",
+      "especie": "",
+      "autor": "",
+      "familia": "",
+      "ficha": "Reserva privada de 6.078 hectáreas de bosque seco en Guayaquil: el remanente mejor conservado de la ciudad.",
+      "signatura": "",
+      "portada": {
+        "tipo": "cuero",
+        "color": "#2c3a2a"
+      },
+      "lamina": "",
+      "secciones": [
+        {
+          "titulo": "El bosque",
+          "texto": "Cerro Blanco es una reserva privada de 6.078 hectáreas de bosque seco tropical, en la cordillera Chongón Colonche, en el kilómetro 16 de la vía a la Costa. El terreno es de Holcim Ecuador y lo administra la Fundación Pro-Bosque desde 1992.\nEs bosque seco: casi todos sus árboles se quedan sin hojas en la estación seca y vuelven a brotar con las lluvias. Por eso el mismo sendero no se parece a sí mismo en marzo y en septiembre."
+        },
+        {
+          "titulo": "Lo que vive adentro",
+          "texto": "Se han contado más de 700 especies de plantas vasculares, y una de cada cinco es endémica de la región tumbesina, el rincón de bosque seco que comparten el suroeste de Ecuador y el norte del Perú.\nDe animales hay más de 300 especies de aves, 54 de mamíferos —24 de ellas murciélagos—, 22 reptiles y 8 anfibios. Entre los amenazados están el papagayo de Guayaquil, símbolo natural de la ciudad, el jaguar de la costa, el gavilán dorsigrís y el jilguero azafranado."
+        },
+        {
+          "titulo": "El sendero",
+          "texto": "El sendero sube entre troncos delgados y piedra suelta, con la hojarasca hasta el tobillo: en la seca se oye cada paso. Arriba hay un mirador de madera desde donde el bosque se ve como una sola copa continua, y al fondo la ciudad.\nLos carteles del camino piden lo mismo de distintas maneras: no salirse de la huella, no llevarse nada, no hacer fuego."
+        },
+        {
+          "titulo": "Por identificar",
+          "texto": "Tres fotos de esta visita quedaron sin nombre: un arbusto de flores rojas en ramillete, un fruto estrellado con rayas verdes y blancas que sale del tronco, y unos frutos verdes y redondos en racimo.\nQuien sepa cuáles son puede abrir el modo bibliotecario y escribirlo aquí: el cambio les llega a todos los que tengan la biblioteca."
+        },
+        {
+          "titulo": "Amenazas",
+          "texto": "La reserva está pegada a la ciudad, a las canteras y a las vías, y eso se nota: tala ilegal, caza furtiva, invasiones, incendios, perros ferales, minería ilegal y el proyecto de una carretera que pasaría por debajo del bosque.\nEn contra juega el vivero de la propia reserva, con capacidad para 100.000 plantas al año, el 90 % de especies nativas del bosque seco, que se siembran en los proyectos de reforestación."
+        }
+      ],
+      "notas": [
+        "Hojarasca hasta el tobillo; suena todo.",
+        "Un mono en las ramas, a contraluz.",
+        "Desde el mirador, el bosque es una sola copa.",
+        "Piedra caliza partida en el camino."
+      ],
+      "imagenes": [
+        {
+          "ruta": "assets/laminas/bosque-dosel.jpg",
+          "en": "portadilla"
+        },
+        {
+          "ruta": "assets/laminas/bosque-mirador.jpg",
+          "en": "seccion:0"
+        },
+        {
+          "ruta": "assets/laminas/bosque-mono.jpg",
+          "en": "seccion:1"
+        },
+        {
+          "ruta": "assets/laminas/bosque-camino.jpg",
+          "en": "seccion:2"
+        },
+        {
+          "ruta": "assets/laminas/flor-roja.jpg",
+          "en": "seccion:3"
+        },
+        {
+          "ruta": "assets/laminas/bosque-hojarasca.jpg",
+          "en": "seccion:4"
+        },
+        {
+          "ruta": "assets/laminas/fruto-estrella.jpg",
+          "en": "lamina"
+        },
+        {
+          "ruta": "assets/laminas/fruto-verde.jpg",
+          "en": "lamina"
+        }
+      ],
+      "imagen": "",
+      "muestra": true,
+      "creado": "2026-10-06T12:00:00.000Z",
+      "actualizado": "2026-10-06T12:00:00.000Z"
+    },
+    {
+      "id": "ceibo",
+      "categoria": "bosque-seco-ecuatorial",
+      "titulo": "Ceibo",
+      "especie": "Ceiba trichistandra",
+      "autor": "(A.Gray) Bakh.",
+      "familia": "Malvaceae",
+      "ficha": "Árbol gigante de corteza verde, que sigue haciendo fotosíntesis cuando ya se quedó sin hojas.",
+      "signatura": "",
+      "altitud": {
+        "min": 300,
+        "max": 1500
+      },
+      "portada": {
+        "tipo": "cuero",
+        "color": "#1f2b26"
+      },
+      "lamina": "",
+      "secciones": [
+        {
+          "titulo": "Descripción",
+          "texto": "Es un árbol caducifolio de gran tamaño: entre 20 y 40 metros de alto y hasta cerca de 2 metros de diámetro. El tronco va ensanchado y las raíces son tubulares, bien marcadas. La corteza de afuera es verde clara y, en los árboles jóvenes, está cubierta de espinas cónicas.\nLas hojas son compuestas y digitadas, de 25 a 40 centímetros, con cinco a nueve folíolos. Las flores salen en racimos laterales, con el cáliz carnoso rojizo o púrpura y los pétalos blancos. El fruto es una cápsula colgante de 10 a 16 centímetros, llena de semillas oscuras envueltas en fibra blanca."
+        },
+        {
+          "titulo": "Hábitat",
+          "texto": "Es propio de la región tumbesina, el bosque seco ecuatorial que comparten el occidente de Ecuador y el noroeste del Perú. Aparece sobre todo entre los 300 y los 1.500 metros, en bosques secos de colina y de montaña.\nAguanta climas cálidos, con temperaturas medias cercanas a los 24 grados y lluvias de apenas 250 a 800 milímetros al año, en suelos pobres en materia orgánica."
+        },
+        {
+          "titulo": "Usos y saberes",
+          "texto": "Figura entre las especies maderables registradas en Cerro Blanco. La fibra blanca que envuelve sus semillas es lo que se lleva el viento: así llega el ceibo a los claros.\nEn sus ramas anidan aves y se instalan colmenas. Parte del daño que sufre el árbol viene justamente de ahí: de quienes trepan a sacar nidos o a recoger miel."
+        },
+        {
+          "titulo": "Curiosidades",
+          "texto": "La corteza verde hace fotosíntesis durante la estación seca. Cuando el árbol se queda desnudo, el tronco sigue trabajando por él.\nLas espinas cónicas son cosa de juventud: abundan en los árboles jóvenes, que son los que más tienen que defenderse."
+        },
+        {
+          "titulo": "Conservación",
+          "texto": "La UICN todavía no lo ha evaluado. Sobre sus poblaciones pesan la tala por el avance de la frontera agrícola y los daños que recibe cuando se capturan las aves que anidan en él o se recoge su miel."
+        }
+      ],
+      "notas": [
+        "Tronco verde, se reconoce desde lejos.",
+        "Espinas cónicas hasta la altura del pecho.",
+        "Las raíces levantan la hojarasca.",
+        "El más grueso no lo abrazan tres personas."
+      ],
+      "imagenes": [
+        {
+          "ruta": "assets/laminas/ceibo-contrafuertes.jpg",
+          "en": "portadilla"
+        },
+        {
+          "ruta": "assets/laminas/ceibo-espinas.jpg",
+          "en": "seccion:3"
+        },
+        {
+          "ruta": "assets/laminas/ceibo-tronco.jpg",
+          "en": "lamina"
+        }
+      ],
+      "imagen": "",
+      "muestra": true,
+      "creado": "2026-10-06T12:00:00.000Z",
+      "actualizado": "2026-10-06T12:00:00.000Z"
+    },
+    {
+      "id": "guayacan",
+      "categoria": "bosque-seco-ecuatorial",
+      "titulo": "Guayacán",
+      "especie": "Handroanthus chrysanthus",
+      "autor": "(Jacq.) S.O.Grose",
+      "familia": "Bignoniaceae",
+      "ficha": "Se queda sin hojas y florece de golpe: campanas amarillas con rayas rojas en la garganta.",
+      "signatura": "",
+      "altitud": {
+        "min": 0,
+        "max": 1700
+      },
+      "portada": {
+        "tipo": "cuero",
+        "color": "#70522f"
+      },
+      "lamina": "",
+      "secciones": [
+        {
+          "titulo": "Descripción",
+          "texto": "Llega a 35 metros de alto, con el fuste recto y el tronco de hasta 60 centímetros de diámetro. Es caducifolio: suelta la hoja cuando falta el agua. La corteza es áspera, gris a café oscuro, partida en grietas verticales profundas.\nLas hojas son opuestas, con cinco hojuelas. Las flores son campanas grandes, de 5 a 12 centímetros, amarillo intenso y con líneas rojas en el cuello. Los frutos son cápsulas cilíndricas y angostas, de 11 a 35 centímetros, que al madurar se abren solas y sueltan semillas aladas de color gris plateado."
+        },
+        {
+          "titulo": "Hábitat",
+          "texto": "Crece desde el nivel del mar hasta los 1.700 metros, en bosques secos de América tropical: de México y Centroamérica hasta Colombia, Venezuela, Ecuador y el norte del Perú.\nPrefiere suelos sueltos y bien drenados. Es de crecimiento lento y vida larga, y se propaga por semilla."
+        },
+        {
+          "titulo": "Usos y saberes",
+          "texto": "Es una de las especies maderables registradas en Cerro Blanco, y de las más buscadas del bosque seco.\nPor lo vistoso de su floración fue declarado árbol nacional de Venezuela en 1948, donde lo llaman araguaney."
+        },
+        {
+          "titulo": "Curiosidades",
+          "texto": "En Ecuador florece al final de la estación seca, entre finales de octubre y diciembre: el árbol pelado se cubre de amarillo durante unos pocos días y después vuelve a echar hojas.\nSi la temporada de lluvias se retrasa, puede florecer y fructificar una segunda vez, con menos fuerza, para asegurar la descendencia."
+        },
+        {
+          "titulo": "Conservación",
+          "texto": "Crece despacio y vive mucho, así que reponer un guayacán cortado lleva décadas. El vivero de Cerro Blanco produce plantas nativas del bosque seco para reforestar, y el guayacán es una de ellas."
+        }
+      ],
+      "notas": [
+        "Corteza con grietas hondas, muy marcadas.",
+        "No lo vimos en flor: no era la época.",
+        "Hojas opuestas, cinco hojuelas.",
+        "Varios troncos rectos, altos y limpios."
+      ],
+      "imagenes": [
+        {
+          "ruta": "assets/laminas/bosque-copas.jpg",
+          "en": "portadilla"
+        },
+        {
+          "ruta": "assets/laminas/bosque-arboles.jpg",
+          "en": "seccion:1"
+        }
+      ],
+      "imagen": "",
+      "muestra": true,
+      "creado": "2026-10-06T12:00:00.000Z",
+      "actualizado": "2026-10-06T12:00:00.000Z"
+    },
+    {
+      "id": "palo-santo",
+      "categoria": "bosque-seco-ecuatorial",
+      "titulo": "Palo santo",
+      "especie": "Bursera graveolens",
+      "autor": "(Kunth) Triana & Planch.",
+      "familia": "Burseraceae",
+      "ficha": "Su madera resinosa huele a cítrico. El humo se usa contra los zancudos y en ceremonias desde hace siglos.",
+      "signatura": "",
+      "portada": {
+        "tipo": "pergamino",
+        "color": "#cdb892"
+      },
+      "lamina": "",
+      "secciones": [
+        {
+          "titulo": "Descripción",
+          "texto": "Es un árbol de 4 a 10 metros, de corteza lisa y gris que no se desprende en capas. Las hojas son pinnadas, de hasta 27,5 centímetros, con cinco a nueve folíolos y el raquis alado.\nLas flores salen en panículas pequeñas, de hasta 6 centímetros. El fruto mide de 7 a 11 milímetros, se abre en dos valvas y se tiñe de rojo al madurar."
+        },
+        {
+          "titulo": "Hábitat",
+          "texto": "Vive en bosques secos de buena parte de la América tropical, sobre todo en la costa del Pacífico de Sudamérica.\nEs un árbol de tierra seca: se le encuentra junto a ceibos y guayacanes, en las mismas laderas pedregosas."
+        },
+        {
+          "titulo": "Usos y saberes",
+          "texto": "La madera resinosa la usan chamanes aimaras, quechuas y jíbaros; las culturas manteña, machalilla, valdivia e inca ya usaban su humo y su aceite con fines terapéuticos. El aceite esencial es amarillo claro, huele a cítrico y es casi todo limoneno.\nSe le han dado usos contra la neuralgia y el catarro, la corteza macerada en alcohol contra el reuma y las hojas en cocimiento como antiespasmódico. El humo de la madera quemada sirve de repelente de zancudos."
+        },
+        {
+          "titulo": "Curiosidades",
+          "texto": "Para que la madera dé aceite de grado terapéutico, el árbol tiene que morir por su cuenta y secarse por lo menos cuarenta años. Cortarlo y dejarlo secar el mismo tiempo no da lo mismo.\nEn Loja también se destila el fruto, que se cosecha en invierno sin tocar el árbol."
+        },
+        {
+          "titulo": "Conservación",
+          "texto": "En 2006 el Perú lo declaró en peligro crítico y prohibió talar árboles vivos: solo se permitía recoger madera caída o muerta. En 2014 salió de la lista de especies protegidas del SERFOR. La UICN lo dio por estable en 2010, pero la tala ilegal sigue siendo común en el noroeste peruano por la demanda de la madera.\nEn Ecuador se lo reforesta trasplantando árboles de zonas donde crecen demasiado juntos a otras donde falta bosque."
+        }
+      ],
+      "notas": [
+        "Corteza lisa y clara, casi gris.",
+        "Olor fuerte al partir una ramita seca.",
+        "Hojas pinnadas, raquis con alas.",
+        "En el vivero lo siembran para reforestar."
+      ],
+      "imagenes": [
+        {
+          "ruta": "assets/laminas/bosque-ladera.jpg",
+          "en": "portadilla"
+        },
+        {
+          "ruta": "assets/laminas/bosque-sotobosque.jpg",
+          "en": "seccion:1"
+        }
+      ],
+      "imagen": "",
+      "muestra": true,
+      "creado": "2026-10-06T12:00:00.000Z",
+      "actualizado": "2026-10-06T12:00:00.000Z"
+    },
+    {
+      "id": "muyuyo",
+      "categoria": "bosque-seco-ecuatorial",
+      "titulo": "Muyuyo",
+      "especie": "Cordia lutea",
+      "autor": "Lam.",
+      "familia": "Boraginaceae",
+      "ficha": "Arbusto de flores amarillas en trompeta, dulces de olor. Su fruto suelta una baba que pega los dedos.",
+      "signatura": "",
+      "portada": {
+        "tipo": "cuero",
+        "color": "#6a4a2c"
+      },
+      "lamina": "",
+      "secciones": [
+        {
+          "titulo": "Descripción",
+          "texto": "Crece como arbusto o arbolito de hasta 8 metros, con las ramas jóvenes peludas. Las hojas son alternas y enteras, de 4 a 10 centímetros, ovaladas o redondas, con el margen finamente dentado y la cara de arriba áspera al tacto.\nLas flores son amarillas, perfumadas y en forma de trompeta, de 2 a 4 centímetros de boca, con cinco a ocho lóbulos. El fruto es una drupa de 8 a 12 milímetros con una a cuatro semillas, de pulpa carnosa."
+        },
+        {
+          "titulo": "Hábitat",
+          "texto": "Es nativo del occidente de Ecuador, las islas Galápagos, el Perú y las islas Marquesas. Crece en regiones áridas.\nEn Galápagos vive en las tierras bajas, muchas veces a pocos metros del mar."
+        },
+        {
+          "titulo": "Usos y saberes",
+          "texto": "Lo llaman también membrillejo del Perú, tina del Perú, overo y overal.\nLo que más se le recuerda es la pulpa del fruto: al exprimirla suelta un material viscoso que se vuelve pegajoso al aire."
+        },
+        {
+          "titulo": "Curiosidades",
+          "texto": "Lamarck lo describió en 1791 con material del Perú; el nombre lutea quiere decir amarillo.\nEn Galápagos, donde hay varias especies de Cordia, se reconoce justo por lo vistoso de sus flores amarillas."
+        },
+        {
+          "titulo": "Conservación",
+          "texto": "No tiene una evaluación propia en la lista roja. Le pesa lo mismo que al resto del bosque seco de la costa: los incendios, el avance de la frontera agrícola y la fragmentación de lo que queda."
+        }
+      ],
+      "notas": [
+        "Flores amarillas, abiertas de mañana.",
+        "Hoja áspera por arriba, como lija fina.",
+        "Crece en el borde del camino, al sol.",
+        "El fruto, al apretarlo, deja los dedos pegajosos."
+      ],
+      "imagenes": [
+        {
+          "ruta": "assets/laminas/bosque-rocas.jpg",
+          "en": "portadilla"
+        },
+        {
+          "ruta": "assets/laminas/bosque-quebrada.jpg",
+          "en": "seccion:1"
+        }
+      ],
+      "imagen": "",
+      "muestra": true,
+      "creado": "2026-10-06T12:00:00.000Z",
+      "actualizado": "2026-10-06T12:00:00.000Z"
+    },
+    {
+      "id": "balsa",
+      "categoria": "bosque-seco-ecuatorial",
+      "titulo": "Balsa",
+      "especie": "Ochroma pyramidale",
+      "autor": "(Cav. ex Lam.) Urb.",
+      "familia": "Malvaceae",
+      "ficha": "La madera más liviana que se trabaja: flota como corcho. Con troncos de balsa navegó la Kon-Tiki.",
+      "signatura": "",
+      "altitud": {
+        "min": 30,
+        "max": 830
+      },
+      "portada": {
+        "tipo": "pergamino",
+        "color": "#d8c8a4"
+      },
+      "lamina": "",
+      "secciones": [
+        {
+          "titulo": "Descripción",
+          "texto": "Alcanza hasta 30 metros. Es siempreverde, aunque suelta la hoja si la estación seca se alarga demasiado. El tronco es liso y la madera, muy blanda.\nLas hojas son simples y anchas, de hasta 38 centímetros, muchas veces con tres lóbulos y con pelusa café amarillenta por el envés. Las flores son grandes, de 7 a 11 centímetros, blancas o color crema y en forma de trompeta. El fruto es una cápsula de 13 a 20 centímetros, con semillas pequeñas envueltas en kapok."
+        },
+        {
+          "titulo": "Hábitat",
+          "texto": "Crece en bosques bajos de crecimiento secundario, y aparece también en bosques secos y húmedos, entre los 30 y los 830 metros. Va de México a Bolivia y las Antillas.\nFlorece de noviembre a febrero. Es de las primeras especies en ocupar un claro: crece rápido y aguanta el sol directo."
+        },
+        {
+          "titulo": "Usos y saberes",
+          "texto": "Su densidad va de 100 a 200 kilos por metro cúbico, con unos 140 de media: cerca de un tercio de otras maderas. Esa ligereza la hace insuperable para flotar, y de ahí viene su nombre.\nCon ella se han hecho salvavidas, esquís acuáticos y modelos a escala. Las comunidades ribereñas arman con sus troncos plataformas flotantes que sirven de lavaderos."
+        },
+        {
+          "titulo": "Curiosidades",
+          "texto": "Thor Heyerdahl construyó con troncos de balsa la Kon-Tiki, la embarcación con la que zarpó del Callao rumbo a la Polinesia."
+        },
+        {
+          "titulo": "Conservación",
+          "texto": "Es una especie común y de crecimiento rápido, y figura entre las maderables registradas en Cerro Blanco. No está amenazada, pero depende de que queden claros y bosque secundario donde instalarse."
+        }
+      ],
+      "notas": [
+        "Tronco liso, la madera cede con la uña.",
+        "Hoja enorme, con pelusa por debajo.",
+        "Sale primero donde cayó un árbol grande.",
+        "Semillas con algodón, como las del ceibo."
+      ],
+      "imagenes": [
+        {
+          "ruta": "assets/laminas/bosque-claro.jpg",
+          "en": "portadilla"
+        },
+        {
+          "ruta": "assets/laminas/bosque-sendero.jpg",
+          "en": "seccion:1"
+        }
+      ],
+      "imagen": "",
+      "muestra": true,
+      "creado": "2026-10-06T12:00:00.000Z",
+      "actualizado": "2026-10-06T12:00:00.000Z"
+    },
+    {
+      "id": "bototillo",
+      "categoria": "bosque-seco-ecuatorial",
+      "titulo": "Bototillo",
+      "especie": "Cochlospermum vitifolium",
+      "autor": "(Willd.) Spreng.",
+      "familia": "Bixaceae",
+      "ficha": "Lo llaman rosa amarilla: da flores de hasta 10 centímetros en ramas peladas. Su madera tiñe de amarillo.",
+      "signatura": "",
+      "altitud": {
+        "min": 0,
+        "max": 1200
+      },
+      "portada": {
+        "tipo": "cuero",
+        "color": "#583a22"
+      },
+      "lamina": "",
+      "secciones": [
+        {
+          "titulo": "Descripción",
+          "texto": "Es un árbol o arbusto de 3 a 15 metros, de hoja caduca. Las hojas tienen cinco a siete lóbulos, como las de la vid, de donde le viene el nombre de la especie.\nLas flores son grandes y amarillas, de 8 a 12 centímetros de ancho, en panículas terminales. El fruto es una cápsula que se abre en dos valvas, café oscura por fuera y color crema por dentro, y suelta semillas con pelos blancos algodonosos."
+        },
+        {
+          "titulo": "Hábitat",
+          "texto": "Va del occidente de México y Centroamérica hasta Ecuador, Perú, Bolivia, Brasil, las Guayanas y Trinidad, siempre en zonas secas.\nCrece del nivel del mar hasta los 1.200 metros, en selvas secas, matorrales y bordes de bosque."
+        },
+        {
+          "titulo": "Usos y saberes",
+          "texto": "De su madera se saca un tinte amarillo anaranjado con el que se tiñe la ropa de algodón.\nEn México se usa contra la ictericia: se remoja su corteza junto con la de la guázima y con esa agua se baña a la persona enferma."
+        },
+        {
+          "titulo": "Curiosidades",
+          "texto": "Lo llaman rosa amarilla porque sus flores se parecen a las rosas, aunque no tienen nada que ver con ellas.\nEn Guatemala y El Salvador se lo conoce como tecomasuche."
+        },
+        {
+          "titulo": "Conservación",
+          "texto": "Está entre las especies maderables registradas en Cerro Blanco. Como el resto del bosque seco de la costa, su suerte depende de que queden remanentes: el de Cerro Blanco es el mejor conservado de Guayaquil."
+        }
+      ],
+      "notas": [
+        "Hoja con cinco lóbulos, como de parra.",
+        "Vainas secas colgando de una rama alta.",
+        "Semillas con algodón blanco.",
+        "Florece con el árbol pelado."
+      ],
+      "imagenes": [
+        {
+          "ruta": "assets/laminas/bosque-vainas.jpg",
+          "en": "portadilla"
+        },
+        {
+          "ruta": "assets/laminas/bosque-espeso.jpg",
+          "en": "seccion:1"
+        }
+      ],
+      "imagen": "",
+      "muestra": true,
+      "creado": "2026-10-06T12:00:00.000Z",
+      "actualizado": "2026-10-06T12:00:00.000Z"
     }
   ]
 }

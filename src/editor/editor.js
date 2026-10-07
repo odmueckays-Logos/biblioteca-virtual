@@ -96,10 +96,26 @@ async function cargar() {
     ? `${columnas} ${columnas === 1 ? 'columna' : 'columnas'}, hasta ${niveles} niveles`
     : `${columnas} ${columnas === 1 ? 'columna' : 'columnas'}`;
   $('#nombre-biblioteca').textContent = `${datos.biblioteca?.nombre || 'Biblioteca'} · ${datos.libros.length} libros en ${org.estantes.length} estantes · ${forma}`;
+  mostrarFuente();
+  renderLista();
+}
+
+// De dónde sale el contenido y, si es compartido, si ahora mismo se llega a la
+// nube. Importa decirlo: sin conexión se ve la biblioteca pero no se puede
+// guardar, y conviene que se entienda por qué antes de escribir media ficha.
+async function mostrarFuente(estado = null) {
   const f = $('#fuente');
+  if (!f) return;
+  const e = estado || (await fuente.estado?.().catch(() => null));
+  if (e?.configurada) {
+    f.textContent = e.conectada
+      ? 'Biblioteca compartida · lo que guardes lo verán todos'
+      : 'Sin conexión con la nube · se ve la última copia, no se puede guardar';
+    f.classList.toggle('solo-lectura', !e.conectada);
+    return;
+  }
   f.textContent = fuente.editable ? `Guardando en ${fuente.nombre}` : `Solo lectura: ${fuente.nombre}`;
   f.classList.toggle('solo-lectura', !fuente.editable);
-  renderLista();
 }
 
 // ------------------------------------------------------------------ catálogo
@@ -1086,6 +1102,9 @@ window.addEventListener('beforeunload', (e) => {
     e.returnValue = '';
   }
 });
+
+// Si se cae o vuelve la conexión con la nube, se dice arriba al instante.
+fuente.alCambiarEstado?.((estado) => mostrarFuente(estado));
 
 // Si el contenido cambia desde fuera (otra ventana, o el archivo editado a mano),
 // se recarga la lista; lo que se está escribiendo no se pierde.

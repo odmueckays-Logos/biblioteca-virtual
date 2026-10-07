@@ -19,9 +19,16 @@ contextBridge.exposeInMainWorld('almacen', {
   eliminarCategoria: (id) => pedir('biblioteca:eliminar-categoria', id),
   subirImagen: (nombre, bytes) => pedir('biblioteca:subir-imagen', nombre, bytes),
   abrirEditor: () => pedir('biblioteca:abrir-editor'),
+  // Si la biblioteca está en la nube y si ahora mismo se llega a ella.
+  estado: () => pedir('biblioteca:estado'),
   alCambiar(fn) {
     const oyente = () => fn();
     ipcRenderer.on('biblioteca:cambio', oyente);
     return () => ipcRenderer.removeListener('biblioteca:cambio', oyente);
+  },
+  alCambiarEstado(fn) {
+    const oyente = (_evento, estado) => fn(estado);
+    ipcRenderer.on('biblioteca:estado', oyente);
+    return () => ipcRenderer.removeListener('biblioteca:estado', oyente);
   },
 });

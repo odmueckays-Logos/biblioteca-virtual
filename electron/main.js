@@ -7,6 +7,7 @@ const { app, BrowserWindow, Menu, dialog, ipcMain, protocol, session } = require
 const fs = require('node:fs');
 const path = require('node:path');
 const { Almacen } = require('./almacen');
+const { Nube } = require('./nube');
 
 // El nombre con el que la app se presenta al sistema: de él cuelga la carpeta
 // donde guarda el contenido (AppData\Roaming\Biblioteca Virtual), así que se pone
@@ -29,7 +30,26 @@ const DATOS = argumento('--datos')
   : app.isPackaged
     ? path.join(app.getPath('userData'), 'datos')
     : path.join(ROOT, 'datos');
-const almacen = new Almacen(DATOS, MUESTRA);
+// La nube: si datos/nube.json tiene una dirección y una clave, la biblioteca de
+// verdad vive allá y este programa es una de sus ventanas. Si no, todo funciona
+// como antes, en esta máquina. `--sin-nube` la apaga (lo usan las pruebas).
+function configuracionNube() {
+  if (process.argv.includes('--sin-nube')) return {};
+  let archivo = {};
+  try {
+    archivo = JSON.parse(fs.readFileSync(path.join(ROOT, 'datos', 'nube.json'), 'utf8'));
+  } catch {
+    /* sin archivo o con un error: biblioteca local */
+  }
+  return {
+    url: argumento('--nube-url') || archivo.url || '',
+    clave: argumento('--nube-clave') || archivo.clave || '',
+    bucket: archivo.bucket || 'laminas',
+  };
+}
+
+const nube = new Nube(configuracionNube());
+const almacen = new Almacen(DATOS, MUESTRA, nube);
 let biblioteca = null;
 let editor = null;
 
@@ -65,11 +85,24 @@ function prepararAlmacen() {
     abrirEditor();
     return true;
   });
+  atender('biblioteca:estado', () => almacen.estado);
   // Todas las ventanas se enteran cuando cambia el contenido.
   almacen.alCambiar(() => {
     for (const win of BrowserWindow.getAllWindows()) win.webContents.send('biblioteca:cambio');
   });
+  // Y cuando se cae o vuelve la conexión con la nube.
+  almacen.alCambiarEstado((estado) => {
+    console.log(`[nube] ${estado.conectada ? 'conectada' : 'sin conexión'}: ${estado.mensaje}`);
+    for (const win of BrowserWindow.getAllWindows()) win.webContents.send('biblioteca:estado', estado);
+  });
   almacen.vigilar();
+  // La sincronización arranca sola: siembra la nube si está vacía, se trae lo
+  // que haya y después pregunta cada pocos segundos si alguien cambió algo.
+  if (almacen.enNube) {
+    almacen.arrancar().then(() => {
+      console.log(`[nube] ${nube.conectada ? `al día (versión ${nube.version})` : `sin conexión: ${nube.mensaje}`}`);
+    });
+  }
 }
 
 // Modo bibliotecario: una ventana aparte con el formulario para agregar y

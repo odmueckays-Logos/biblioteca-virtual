@@ -12,12 +12,18 @@
 //   subirImagen(archivo)    → ruta o URL para el campo `imagen` del libro
 //   alCambiar(fn)           → llama a fn cuando el contenido cambia; devuelve
 //                             una función para dejar de escuchar
+//   estado()                → { configurada, conectada, mensaje, version } de la nube
+//   alCambiarEstado(fn)     → avisa cuando la conexión se cae o vuelve
 //   editable                → true si se puede escribir
 //
 // Hoy hay dos: el archivo local del proyecto (app de escritorio, lectura y
-// escritura) y el mismo archivo servido por HTTP (navegador, solo lectura). Para
-// conectar una base de datos basta con escribir otra clase con estos métodos y
-// devolverla en crearFuente(); ver «Conectar una base de datos» en el README.
+// escritura) y el mismo archivo servido por HTTP (navegador, solo lectura).
+//
+// La nube no es una tercera: vive del otro lado del puente, en el proceso
+// principal (electron/nube.js). Desde aquí no se nota —se sigue pidiendo y
+// guardando igual—, y a cambio las dos ventanas se sincronizan por el mismo
+// camino, el archivo local hace de caché y de respaldo, y la sala se ve aunque
+// no haya internet. Lo único que asoma es `estado()`, para poder decirlo.
 
 const ARCHIVO = 'datos/biblioteca.json';
 
@@ -61,6 +67,16 @@ class FuenteArchivoLocal {
   alCambiar(fn) {
     return this.almacen.alCambiar(fn);
   }
+
+  // Si la biblioteca está en la nube y si ahora mismo se llega a ella.
+  // { configurada, conectada, mensaje, version }
+  estado() {
+    return this.almacen.estado?.() ?? Promise.resolve({ configurada: false, conectada: false, mensaje: 'biblioteca local' });
+  }
+
+  alCambiarEstado(fn) {
+    return this.almacen.alCambiarEstado?.(fn) ?? (() => {});
+  }
 }
 
 // El mismo archivo leído por HTTP (servidor de desarrollo): solo lectura.
@@ -78,6 +94,14 @@ class FuenteSoloLectura {
   }
 
   alCambiar() {
+    return () => {};
+  }
+
+  estado() {
+    return Promise.resolve({ configurada: false, conectada: false, mensaje: this.nombre });
+  }
+
+  alCambiarEstado() {
     return () => {};
   }
 }
