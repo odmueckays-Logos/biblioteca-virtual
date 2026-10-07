@@ -144,15 +144,21 @@ create trigger cambio_biblioteca after update on biblioteca
 --   select id, cuando, quien from respaldos order by id desc limit 20;
 --   select restaurar(123);
 --
--- Se ejecuta desde el panel de Supabase, no desde la app: deshacer el trabajo de
--- otro no es algo que deba poder hacerse con un clic desde cualquier copia.
+-- Normalmente se ejecuta desde el panel de Supabase, pero cualquiera que tenga
+-- el programa puede llamarla por la API (rpc/restaurar). Es a propósito: en una
+-- biblioteca donde cualquiera puede borrar, cualquiera tiene que poder deshacer,
+-- sin depender de que el dueño esté despierto. Y todo lo que hace queda, a su
+-- vez, respaldado.
 create or replace function restaurar(respaldo bigint) returns void language plpgsql as $$
 declare d jsonb;
 begin
   select datos into d from respaldos where id = respaldo;
   if d is null then raise exception 'No hay ningún respaldo con el número %', respaldo; end if;
-  delete from libros;      -- primero los libros: las categorías no se borran con libros dentro
-  delete from categorias;
+  -- El «where true» no sobra: Supabase rechaza los delete sin where (protección
+  -- contra el clásico de borrar una tabla entera sin querer), y aquí la queremos
+  -- entera a propósito. Primero los libros: una categoría con libros no se borra.
+  delete from libros where true;
+  delete from categorias where true;
   insert into categorias select * from jsonb_populate_recordset(null::categorias, d -> 'categorias');
   insert into libros     select * from jsonb_populate_recordset(null::libros,     d -> 'libros');
   update biblioteca set
